@@ -332,15 +332,8 @@
   }
 }
 
-% add conference notice to bottom of first page
-\newcommand{\ftype@noticebox}{8}
-\newcommand{\@notice}{%
-  % give a bit of extra room back to authors on first page
-  \enlargethispage{2\baselineskip}%
-  \@float{noticebox}[b]%
-    \footnotesize\@noticestring%
-  \end@float%
-}
+% Remove conference notice from all pages
+\newcommand{\@notice}{}
 
 % abstract styling
 \renewenvironment{abstract}%
