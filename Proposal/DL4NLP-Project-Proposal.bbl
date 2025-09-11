@@ -1,0 +1,45 @@
+\begin{thebibliography}{10}
+
+\bibitem{fastdetectgpt}
+Guangsheng Bao, Yanbin Zhao, Zhiyang Teng, Linyi Yang, and Yue Zhang.
+\newblock Fast-detectgpt: Efficient zero-shot detection of machine-generated text via conditional probability curvature, 2024.
+
+\bibitem{deepseekai}
+DeepSeek-AI.
+\newblock Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning, 2025.
+
+\bibitem{writingprompts}
+Angela Fan, Mike Lewis, and Yann Dauphin.
+\newblock Hierarchical neural story generation.
+\newblock In Iryna Gurevych and Yusuke Miyao, editors, {\em Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)}, pages 889--898, Melbourne, Australia, July 2018. Association for Computational Linguistics.
+
+\bibitem{HC3}
+Biyang Guo, Xin Zhang, Ziyuan Wang, Minqi Jiang, Jinran Nie, Yuxuan Ding, Jianwei Yue, and Yupeng Wu.
+\newblock How close is chatgpt to human experts? comparison corpus, evaluation, and detection, 2023.
+
+\bibitem{PubMedQA}
+Qiao Jin, Bhuwan Dhingra, Zhengping Liu, William Cohen, and Xinghua Lu.
+\newblock {P}ub{M}ed{QA}: A dataset for biomedical research question answering.
+\newblock In Kentaro Inui, Jing Jiang, Vincent Ng, and Xiaojun Wan, editors, {\em Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)}, pages 2567--2577, Hong Kong, China, November 2019. Association for Computational Linguistics.
+
+\bibitem{detectgpt}
+Eric Mitchell, Yoonho Lee, Alexander Khazatsky, Christopher~D. Manning, and Chelsea Finn.
+\newblock Detectgpt: Zero-shot machine-generated text detection using probability curvature, 2023.
+
+\bibitem{XSum}
+Shashi Narayan, Shay~B. Cohen, and Mirella Lapata.
+\newblock Don't give me the details, just the summary! topic-aware convolutional neural networks for extreme summarization, 2018.
+
+\bibitem{gptoss20bmodel}
+OpenAI.
+\newblock gpt-oss-120b and gpt-oss-20b model card, 2025.
+
+\bibitem{SQuAD}
+Pranav Rajpurkar, Jian Zhang, Konstantin Lopyrev, and Percy Liang.
+\newblock Squad: 100,000+ questions for machine comprehension of text, 2016.
+
+\bibitem{Qwen3}
+Qwen Team.
+\newblock Qwen3 technical report, 2025.
+
+\end{thebibliography}
