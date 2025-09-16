@@ -1,0 +1,1392 @@
+============================================================================================== 
+Warning! Mixing Conda and module environments may lead to corruption of the
+user environment. 
+We do not recommend users mixing those two environments unless absolutely
+necessary. Note that 
+SURF does not provide any support for Conda environment.
+For more information, please refer to our software policy page:
+https://servicedesk.surf.nl/wiki/display/WIKI/Software+policy+Snellius#SoftwarepolicySnellius-UseofAnacondaandMinicondaenvironmentsonSnellius 
+
+Remember that many packages have already been installed on the system and can
+be loaded using 
+the 'module load <package__name>' command. If you are uncertain if a package is
+already available 
+on the system, please use 'module avail' or 'module spider' to search for it.
+============================================================================================== 
+Collecting package metadata (current_repodata.json): ...working... DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/noarch/current_repodata.json HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/r/noarch/current_repodata.json HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/r/linux-64/current_repodata.json HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/current_repodata.json HTTP/1.1" 200 None
+done
+Solving environment: ...working... unsuccessful attempt using repodata from current_repodata.json, retrying with next repodata source.
+Collecting package metadata (repodata.json): ...working... DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/r/linux-64/repodata.json HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/repodata.json HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/noarch/repodata.json HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/r/noarch/repodata.json HTTP/1.1" 200 None
+done
+Solving environment: ...working... done
+
+
+==> WARNING: A newer version of conda exists. <==
+  current version: 23.7.2
+  latest version: 25.7.0
+
+Please update conda by running
+
+    $ conda update -n base -c defaults conda
+
+Or to minimize the number of packages updated during conda update use
+
+     conda install conda=25.7.0
+
+
+
+## Package Plan ##
+
+  environment location: /home/scur1018/.conda/envs/fastdetectGPT
+
+  added / updated specs:
+    - python=3.8
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    ca-certificates-2025.9.9   |       h06a4308_0         127 KB
+    ld_impl_linux-64-2.40      |       h12ee557_0         710 KB
+    libffi-3.4.4               |       h6a678d5_1         141 KB
+    libxcb-1.17.0              |       h9b100fa_0         430 KB
+    libzlib-1.3.1              |       hb25bd0a_0          59 KB
+    ncurses-6.5                |       h7934f7d_0         1.1 MB
+    openssl-3.0.17             |       h5eee18b_0         5.2 MB
+    pip-24.2                   |   py38h06a4308_0         2.2 MB
+    pthread-stubs-0.3          |       h0ce48e5_1           5 KB
+    python-3.8.20              |       he870216_0        23.8 MB
+    readline-8.3               |       hc2a1206_0         471 KB
+    setuptools-75.1.0          |   py38h06a4308_0         1.7 MB
+    sqlite-3.50.2              |       hb25bd0a_1         1.1 MB
+    tk-8.6.15                  |       h54e0aa7_0         3.4 MB
+    wheel-0.44.0               |   py38h06a4308_0         108 KB
+    xorg-libx11-1.8.12         |       h9b100fa_1         895 KB
+    xorg-libxau-1.0.12         |       h9b100fa_0          13 KB
+    xorg-libxdmcp-1.1.5        |       h9b100fa_0          19 KB
+    xorg-xorgproto-2024.1      |       h5eee18b_1         580 KB
+    xz-5.6.4                   |       h5eee18b_1         567 KB
+    zlib-1.3.1                 |       hb25bd0a_0          96 KB
+    ------------------------------------------------------------
+                                           Total:        42.6 MB
+
+The following NEW packages will be INSTALLED:
+
+  _libgcc_mutex      pkgs/main/linux-64::_libgcc_mutex-0.1-main 
+  _openmp_mutex      pkgs/main/linux-64::_openmp_mutex-5.1-1_gnu 
+  ca-certificates    pkgs/main/linux-64::ca-certificates-2025.9.9-h06a4308_0 
+  ld_impl_linux-64   pkgs/main/linux-64::ld_impl_linux-64-2.40-h12ee557_0 
+  libffi             pkgs/main/linux-64::libffi-3.4.4-h6a678d5_1 
+  libgcc-ng          pkgs/main/linux-64::libgcc-ng-11.2.0-h1234567_1 
+  libgomp            pkgs/main/linux-64::libgomp-11.2.0-h1234567_1 
+  libstdcxx-ng       pkgs/main/linux-64::libstdcxx-ng-11.2.0-h1234567_1 
+  libxcb             pkgs/main/linux-64::libxcb-1.17.0-h9b100fa_0 
+  libzlib            pkgs/main/linux-64::libzlib-1.3.1-hb25bd0a_0 
+  ncurses            pkgs/main/linux-64::ncurses-6.5-h7934f7d_0 
+  openssl            pkgs/main/linux-64::openssl-3.0.17-h5eee18b_0 
+  pip                pkgs/main/linux-64::pip-24.2-py38h06a4308_0 
+  pthread-stubs      pkgs/main/linux-64::pthread-stubs-0.3-h0ce48e5_1 
+  python             pkgs/main/linux-64::python-3.8.20-he870216_0 
+  readline           pkgs/main/linux-64::readline-8.3-hc2a1206_0 
+  setuptools         pkgs/main/linux-64::setuptools-75.1.0-py38h06a4308_0 
+  sqlite             pkgs/main/linux-64::sqlite-3.50.2-hb25bd0a_1 
+  tk                 pkgs/main/linux-64::tk-8.6.15-h54e0aa7_0 
+  wheel              pkgs/main/linux-64::wheel-0.44.0-py38h06a4308_0 
+  xorg-libx11        pkgs/main/linux-64::xorg-libx11-1.8.12-h9b100fa_1 
+  xorg-libxau        pkgs/main/linux-64::xorg-libxau-1.0.12-h9b100fa_0 
+  xorg-libxdmcp      pkgs/main/linux-64::xorg-libxdmcp-1.1.5-h9b100fa_0 
+  xorg-xorgproto     pkgs/main/linux-64::xorg-xorgproto-2024.1-h5eee18b_1 
+  xz                 pkgs/main/linux-64::xz-5.6.4-h5eee18b_1 
+  zlib               pkgs/main/linux-64::zlib-1.3.1-hb25bd0a_0 
+
+
+
+Downloading and Extracting Packages
+wheel-0.44.0         | 108 KB    |            |   0% 
+pthread-stubs-0.3    | 5 KB      |            |   0% [A
+
+sqlite-3.50.2        | 1.1 MB    |            |   0% [A[ADEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+
+
+
+xorg-libxau-1.0.12   | 13 KB     |            |   0% [A[A[ADEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+
+
+
+
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+python-3.8.20        | 23.8 MB   |            |   0% [A[A[A[A
+
+
+
+
+ca-certificates-2025 | 127 KB    |            |   0% [A[A[A[A[A
+
+
+
+
+
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+openssl-3.0.17       | 5.2 MB    |            |   0% [A[A[A[A[A[A
+
+
+
+
+
+
+ncurses-6.5          | 1.1 MB    |            |   0% [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+libxcb-1.17.0        | 430 KB    |            |   0% [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): repo.anaconda.com:443
+xorg-libxdmcp-1.1.5  | 19 KB     |            |   0% [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+setuptools-75.1.0    | 1.7 MB    |            |   0% [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+ld_impl_linux-64-2.4 | 710 KB    |            |   0% [A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+libffi-3.4.4         | 141 KB    |            |   0% [A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+libzlib-1.3.1        | 59 KB     |            |   0% [A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+xorg-xorgproto-2024. | 580 KB    |            |   0% [A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+xz-5.6.4             | 567 KB    |            |   0% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+xorg-libx11-1.8.12   | 895 KB    |            |   0% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+tk-8.6.15            | 3.4 MB    |            |   0% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+zlib-1.3.1           | 96 KB     |            |   0% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ... (more hidden) ...[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/wheel-0.44.0-py38h06a4308_0.conda HTTP/1.1" 200 110829
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/xorg-libxau-1.0.12-h9b100fa_0.conda HTTP/1.1" 200 13582
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/sqlite-3.50.2-hb25bd0a_1.conda HTTP/1.1" 200 1151016
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/pthread-stubs-0.3-h0ce48e5_1.conda HTTP/1.1" 200 5360
+
+pthread-stubs-0.3    | 5 KB      | ########## | 100% [A
+
+sqlite-3.50.2        | 1.1 MB    | #4         |  14% [A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/python-3.8.20-he870216_0.conda HTTP/1.1" 200 24929975
+
+
+
+
+python-3.8.20        | 23.8 MB   |            |   0% [A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/ca-certificates-2025.9.9-h06a4308_0.conda HTTP/1.1" 200 129696
+
+
+
+xorg-libxau-1.0.12   | 13 KB     | ########## | 100% [A[A[A
+
+
+
+
+ca-certificates-2025 | 127 KB    | #2         |  13% [A[A[A[A[A
+
+
+xorg-libxau-1.0.12   | 13 KB     | ########## | 100% [A[A[A
+pthread-stubs-0.3    | 5 KB      | ########## | 100% [ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/ncurses-6.5-h7934f7d_0.conda HTTP/1.1" 200 1137647
+
+
+
+
+
+
+
+ncurses-6.5          | 1.1 MB    | 1          |   1% [A[A[A[A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/openssl-3.0.17-h5eee18b_0.conda HTTP/1.1" 200 5465379
+
+
+
+
+
+
+openssl-3.0.17       | 5.2 MB    |            |   0% [A[A[A[A[A[A
+
+
+
+
+ca-certificates-2025 | 127 KB    | ########## | 100% [A[A[A[A[A
+
+sqlite-3.50.2        | 1.1 MB    | ########## | 100% [A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/xorg-libxdmcp-1.1.5-h9b100fa_0.conda HTTP/1.1" 200 19260
+
+
+
+
+
+
+
+
+
+xorg-libxdmcp-1.1.5  | 19 KB     | ########5  |  85% [A[A[A[A[A[A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/libxcb-1.17.0-h9b100fa_0.conda HTTP/1.1" 200 440690
+
+
+
+
+
+
+
+
+libxcb-1.17.0        | 430 KB    | 3          |   4% [A[A[A[A[A[A[A[A
+
+
+
+python-3.8.20        | 23.8 MB   | ###8       |  39% [A[A[A[A
+
+
+
+
+
+
+
+
+xorg-libxdmcp-1.1.5  | 19 KB     | ########## | 100% [A[A[A[A[A[A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/setuptools-75.1.0-py38h06a4308_0.conda HTTP/1.1" 200 1771386
+
+
+
+
+
+
+
+
+
+
+setuptools-75.1.0    | 1.7 MB    |            |   1% [A[A[A[A[A[A[A[A[A[Awheel-0.44.0         | 108 KB    | ########## | 100% wheel-0.44.0         | 108 KB    | ########## | 100% DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/ld_impl_linux-64-2.40-h12ee557_0.conda HTTP/1.1" 200 726762
+
+
+
+
+
+
+
+
+
+
+
+ld_impl_linux-64-2.4 | 710 KB    | 2          |   2% [A[A[A[A[A[A[A[A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/libffi-3.4.4-h6a678d5_1.conda HTTP/1.1" 200 144691
+
+
+
+
+
+
+
+
+
+
+
+
+libffi-3.4.4         | 141 KB    | #1         |  11% [A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+python-3.8.20        | 23.8 MB   | ######5    |  66% [A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/xorg-xorgproto-2024.1-h5eee18b_1.conda HTTP/1.1" 200 594175
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+xorg-xorgproto-2024. | 580 KB    | 2          |   3% [A[A[A[A[A[A[A[A[A[A[A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/libzlib-1.3.1-hb25bd0a_0.conda HTTP/1.1" 200 60697
+
+
+
+
+
+
+
+
+
+
+
+
+
+libzlib-1.3.1        | 59 KB     | ##6        |  27% [A[A[A[A[A[A[A[A[A[A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/xz-5.6.4-h5eee18b_1.conda HTTP/1.1" 200 580311
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+xz-5.6.4             | 567 KB    | 2          |   3% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/xorg-libx11-1.8.12-h9b100fa_1.conda HTTP/1.1" 200 916212
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+xorg-libx11-1.8.12   | 895 KB    | 1          |   2% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/readline-8.3-hc2a1206_0.conda HTTP/1.1" 200 481826
+DEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/tk-8.6.15-h54e0aa7_0.conda HTTP/1.1" 200 3610181
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ... (more hidden) ...[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/zlib-1.3.1-hb25bd0a_0.conda HTTP/1.1" 200 98150
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+tk-8.6.15            | 3.4 MB    |            |   0% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+zlib-1.3.1           | 96 KB     | #6         |  17% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+libxcb-1.17.0        | 430 KB    | ########## | 100% [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+libxcb-1.17.0        | 430 KB    | ########## | 100% [A[A[A[A[A[A[A[ADEBUG:urllib3.connectionpool:https://repo.anaconda.com:443 "GET /pkgs/main/linux-64/pip-24.2-py38h06a4308_0.conda HTTP/1.1" 200 2316352
+
+
+
+
+
+
+
+
+
+
+
+ld_impl_linux-64-2.4 | 710 KB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+ld_impl_linux-64-2.4 | 710 KB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+openssl-3.0.17       | 5.2 MB    | ########## | 100% [A[A[A[A[A[A
+
+
+
+
+
+openssl-3.0.17       | 5.2 MB    | ########## | 100% [A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+libffi-3.4.4         | 141 KB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+libffi-3.4.4         | 141 KB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+libzlib-1.3.1        | 59 KB     | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+libzlib-1.3.1        | 59 KB     | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+xorg-xorgproto-2024. | 580 KB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+xorg-xorgproto-2024. | 580 KB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+xz-5.6.4             | 567 KB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+xz-5.6.4             | 567 KB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+setuptools-75.1.0    | 1.7 MB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+setuptools-75.1.0    | 1.7 MB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+xorg-libx11-1.8.12   | 895 KB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+xorg-libx11-1.8.12   | 895 KB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+zlib-1.3.1           | 96 KB     | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+zlib-1.3.1           | 96 KB     | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ... (more hidden) ...[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ... (more hidden) ...[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+tk-8.6.15            | 3.4 MB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+tk-8.6.15            | 3.4 MB    | ########## | 100% [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+ncurses-6.5          | 1.1 MB    | ########## | 100% [A[A[A[A[A[A[A
+
+
+
+
+
+
+ncurses-6.5          | 1.1 MB    | ########## | 100% [A[A[A[A[A[A[A
+
+
+
+python-3.8.20        | 23.8 MB   | ########## | 100% [A[A[A[A
+
+
+
+python-3.8.20        | 23.8 MB   | ########## | 100% [A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                      [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A                                                     
+                                                     [A
+
+                                                     [A[A
+
+
+                                                     [A[A[A
+
+
+
+                                                     [A[A[A[A
+
+
+
+
+                                                     [A[A[A[A[A
+
+
+
+
+
+                                                     [A[A[A[A[A[A
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                     [A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+[A
+Preparing transaction: ...working... done
+Verifying transaction: ...working... done
+Executing transaction: ...working... done
+#
+# To activate this environment, use
+#
+#     $ conda activate fastdetectGPT
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
+
+usage: conda [-h] [--no-plugins] [-V] COMMAND ...
+conda: error: argument COMMAND: invalid choice: 'activate' (choose from 'clean', 'compare', 'config', 'create', 'info', 'init', 'install', 'list', 'notices', 'package', 'remove', 'uninstall', 'rename', 'run', 'search', 'update', 'upgrade', 'build', 'convert', 'debug', 'develop', 'doctor', 'index', 'inspect', 'metapackage', 'render', 'skeleton', 'repo', 'server', 'pack', 'verify', 'content-trust', 'token', 'env')
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: pip in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (23.2.1)
+Collecting pip
+  Obtaining dependency information for pip from https://files.pythonhosted.org/packages/b7/3f/945ef7ab14dc4f9d7f40288d2df998d1837ee0888ec3659c813487572faa/pip-25.2-py3-none-any.whl.metadata
+  Downloading pip-25.2-py3-none-any.whl.metadata (4.7 kB)
+Using cached pip-25.2-py3-none-any.whl (1.8 MB)
+Installing collected packages: pip
+  WARNING: The scripts pip, pip3 and pip3.11 are installed in '/home/scur1018/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+Successfully installed pip-25.2
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: torch in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from -r requirements.txt (line 1)) (2.0.1)
+Requirement already satisfied: numpy in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from -r requirements.txt (line 2)) (1.24.3)
+Collecting transformers==4.28.1 (from -r requirements.txt (line 3))
+  Using cached transformers-4.28.1-py3-none-any.whl.metadata (109 kB)
+Requirement already satisfied: datasets==2.12.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (2.12.0)
+Requirement already satisfied: matplotlib in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from -r requirements.txt (line 5)) (3.7.1)
+Requirement already satisfied: tqdm in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from -r requirements.txt (line 6)) (4.65.0)
+Collecting openai (from -r requirements.txt (line 7))
+  Using cached openai-1.107.3-py3-none-any.whl.metadata (29 kB)
+Requirement already satisfied: nltk in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from -r requirements.txt (line 8)) (3.8.1)
+Requirement already satisfied: filelock in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from transformers==4.28.1->-r requirements.txt (line 3)) (3.9.0)
+Requirement already satisfied: huggingface-hub<1.0,>=0.11.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from transformers==4.28.1->-r requirements.txt (line 3)) (0.15.1)
+Requirement already satisfied: packaging>=20.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from transformers==4.28.1->-r requirements.txt (line 3)) (23.0)
+Requirement already satisfied: pyyaml>=5.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from transformers==4.28.1->-r requirements.txt (line 3)) (6.0)
+Requirement already satisfied: regex!=2019.12.17 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from transformers==4.28.1->-r requirements.txt (line 3)) (2022.7.9)
+Requirement already satisfied: requests in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from transformers==4.28.1->-r requirements.txt (line 3)) (2.31.0)
+Requirement already satisfied: tokenizers!=0.11.3,<0.14,>=0.11.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from transformers==4.28.1->-r requirements.txt (line 3)) (0.13.2)
+Requirement already satisfied: pyarrow>=8.0.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets==2.12.0->-r requirements.txt (line 4)) (11.0.0)
+Requirement already satisfied: dill<0.3.7,>=0.3.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets==2.12.0->-r requirements.txt (line 4)) (0.3.6)
+Requirement already satisfied: pandas in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets==2.12.0->-r requirements.txt (line 4)) (1.5.3)
+Requirement already satisfied: xxhash in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets==2.12.0->-r requirements.txt (line 4)) (2.0.2)
+Requirement already satisfied: multiprocess in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets==2.12.0->-r requirements.txt (line 4)) (0.70.14)
+Requirement already satisfied: fsspec>=2021.11.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from fsspec[http]>=2021.11.1->datasets==2.12.0->-r requirements.txt (line 4)) (2023.4.0)
+Requirement already satisfied: aiohttp in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets==2.12.0->-r requirements.txt (line 4)) (3.8.3)
+Requirement already satisfied: responses<0.19 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets==2.12.0->-r requirements.txt (line 4)) (0.13.3)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface-hub<1.0,>=0.11.0->transformers==4.28.1->-r requirements.txt (line 3)) (4.7.1)
+Requirement already satisfied: urllib3>=1.25.10 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from responses<0.19->datasets==2.12.0->-r requirements.txt (line 4)) (1.26.16)
+Requirement already satisfied: six in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from responses<0.19->datasets==2.12.0->-r requirements.txt (line 4)) (1.16.0)
+Requirement already satisfied: sympy in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from torch->-r requirements.txt (line 1)) (1.11.1)
+Requirement already satisfied: networkx in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from torch->-r requirements.txt (line 1)) (3.1)
+Requirement already satisfied: jinja2 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from torch->-r requirements.txt (line 1)) (3.1.2)
+Requirement already satisfied: contourpy>=1.0.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from matplotlib->-r requirements.txt (line 5)) (1.0.5)
+Requirement already satisfied: cycler>=0.10 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from matplotlib->-r requirements.txt (line 5)) (0.11.0)
+Requirement already satisfied: fonttools>=4.22.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from matplotlib->-r requirements.txt (line 5)) (4.25.0)
+Requirement already satisfied: kiwisolver>=1.0.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from matplotlib->-r requirements.txt (line 5)) (1.4.4)
+Requirement already satisfied: pillow>=6.2.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from matplotlib->-r requirements.txt (line 5)) (9.4.0)
+Requirement already satisfied: pyparsing>=2.3.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from matplotlib->-r requirements.txt (line 5)) (3.0.9)
+Requirement already satisfied: python-dateutil>=2.7 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from matplotlib->-r requirements.txt (line 5)) (2.8.2)
+Requirement already satisfied: anyio<5,>=3.5.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from openai->-r requirements.txt (line 7)) (3.5.0)
+Collecting distro<2,>=1.7.0 (from openai->-r requirements.txt (line 7))
+  Using cached distro-1.9.0-py3-none-any.whl.metadata (6.8 kB)
+Collecting httpx<1,>=0.23.0 (from openai->-r requirements.txt (line 7))
+  Using cached httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+Collecting jiter<1,>=0.4.0 (from openai->-r requirements.txt (line 7))
+  Downloading jiter-0.11.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (5.2 kB)
+Collecting pydantic<3,>=1.9.0 (from openai->-r requirements.txt (line 7))
+  Using cached pydantic-2.11.9-py3-none-any.whl.metadata (68 kB)
+Requirement already satisfied: sniffio in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from openai->-r requirements.txt (line 7)) (1.2.0)
+Collecting typing-extensions>=3.7.4.3 (from huggingface-hub<1.0,>=0.11.0->transformers==4.28.1->-r requirements.txt (line 3))
+  Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+Requirement already satisfied: idna>=2.8 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from anyio<5,>=3.5.0->openai->-r requirements.txt (line 7)) (3.4)
+Requirement already satisfied: certifi in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from httpx<1,>=0.23.0->openai->-r requirements.txt (line 7)) (2023.7.22)
+Collecting httpcore==1.* (from httpx<1,>=0.23.0->openai->-r requirements.txt (line 7))
+  Using cached httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Collecting h11>=0.16 (from httpcore==1.*->httpx<1,>=0.23.0->openai->-r requirements.txt (line 7))
+  Using cached h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting annotated-types>=0.6.0 (from pydantic<3,>=1.9.0->openai->-r requirements.txt (line 7))
+  Using cached annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.33.2 (from pydantic<3,>=1.9.0->openai->-r requirements.txt (line 7))
+  Downloading pydantic_core-2.33.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
+Collecting typing-inspection>=0.4.0 (from pydantic<3,>=1.9.0->openai->-r requirements.txt (line 7))
+  Using cached typing_inspection-0.4.1-py3-none-any.whl.metadata (2.6 kB)
+Requirement already satisfied: click in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from nltk->-r requirements.txt (line 8)) (8.0.4)
+Requirement already satisfied: joblib in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from nltk->-r requirements.txt (line 8)) (1.2.0)
+Requirement already satisfied: attrs>=17.3.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets==2.12.0->-r requirements.txt (line 4)) (22.1.0)
+Requirement already satisfied: charset-normalizer<3.0,>=2.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets==2.12.0->-r requirements.txt (line 4)) (2.0.4)
+Requirement already satisfied: multidict<7.0,>=4.5 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets==2.12.0->-r requirements.txt (line 4)) (6.0.2)
+Requirement already satisfied: async-timeout<5.0,>=4.0.0a3 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets==2.12.0->-r requirements.txt (line 4)) (4.0.2)
+Requirement already satisfied: yarl<2.0,>=1.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets==2.12.0->-r requirements.txt (line 4)) (1.8.1)
+Requirement already satisfied: frozenlist>=1.1.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets==2.12.0->-r requirements.txt (line 4)) (1.3.3)
+Requirement already satisfied: aiosignal>=1.1.2 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets==2.12.0->-r requirements.txt (line 4)) (1.2.0)
+Requirement already satisfied: MarkupSafe>=2.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from jinja2->torch->-r requirements.txt (line 1)) (2.1.1)
+Requirement already satisfied: pytz>=2020.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from pandas->datasets==2.12.0->-r requirements.txt (line 4)) (2022.7)
+Requirement already satisfied: mpmath>=0.19 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from sympy->torch->-r requirements.txt (line 1)) (1.3.0)
+Using cached transformers-4.28.1-py3-none-any.whl (7.0 MB)
+Using cached openai-1.107.3-py3-none-any.whl (947 kB)
+Using cached distro-1.9.0-py3-none-any.whl (20 kB)
+Using cached httpx-0.28.1-py3-none-any.whl (73 kB)
+Using cached httpcore-1.0.9-py3-none-any.whl (78 kB)
+Downloading jiter-0.11.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (348 kB)
+Using cached pydantic-2.11.9-py3-none-any.whl (444 kB)
+Downloading pydantic_core-2.33.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 86.9 MB/s  0:00:00
+Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+Using cached annotated_types-0.7.0-py3-none-any.whl (13 kB)
+Using cached h11-0.16.0-py3-none-any.whl (37 kB)
+Using cached typing_inspection-0.4.1-py3-none-any.whl (14 kB)
+Installing collected packages: typing-extensions, jiter, h11, distro, annotated-types, typing-inspection, pydantic-core, httpcore, transformers, pydantic, httpx, openai
+  WARNING: The script distro is installed in '/home/scur1018/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The script transformers-cli is installed in '/home/scur1018/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The script httpx is installed in '/home/scur1018/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The script openai is installed in '/home/scur1018/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+
+Successfully installed annotated-types-0.7.0 distro-1.9.0 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 jiter-0.11.0 openai-1.107.3 pydantic-2.11.9 pydantic-core-2.33.2 transformers-4.28.1 typing-extensions-4.15.0 typing-inspection-0.4.1
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: huggingface_hub in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (0.15.1)
+Requirement already satisfied: filelock in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface_hub) (3.9.0)
+Requirement already satisfied: fsspec in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface_hub) (2023.4.0)
+Requirement already satisfied: requests in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface_hub) (2.31.0)
+Requirement already satisfied: tqdm>=4.42.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface_hub) (4.65.0)
+Requirement already satisfied: pyyaml>=5.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface_hub) (6.0)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in /home/scur1018/.local/lib/python3.11/site-packages (from huggingface_hub) (4.15.0)
+Requirement already satisfied: packaging>=20.9 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface_hub) (23.0)
+Requirement already satisfied: charset-normalizer<4,>=2 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from requests->huggingface_hub) (2.0.4)
+Requirement already satisfied: idna<4,>=2.5 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from requests->huggingface_hub) (3.4)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from requests->huggingface_hub) (1.26.16)
+Requirement already satisfied: certifi>=2017.4.17 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from requests->huggingface_hub) (2023.7.22)
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: huggingface_hub[cli] in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (0.15.1)
+Collecting huggingface_hub[cli]
+  Using cached huggingface_hub-0.35.0-py3-none-any.whl.metadata (14 kB)
+Requirement already satisfied: filelock in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface_hub[cli]) (3.9.0)
+Collecting fsspec>=2023.5.0 (from huggingface_hub[cli])
+  Using cached fsspec-2025.9.0-py3-none-any.whl.metadata (10 kB)
+Requirement already satisfied: packaging>=20.9 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface_hub[cli]) (23.0)
+Requirement already satisfied: pyyaml>=5.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface_hub[cli]) (6.0)
+Requirement already satisfied: requests in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface_hub[cli]) (2.31.0)
+Requirement already satisfied: tqdm>=4.42.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from huggingface_hub[cli]) (4.65.0)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in /home/scur1018/.local/lib/python3.11/site-packages (from huggingface_hub[cli]) (4.15.0)
+Collecting hf-xet<2.0.0,>=1.1.3 (from huggingface_hub[cli])
+  Using cached hf_xet-1.1.10-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.7 kB)
+Collecting InquirerPy==0.3.4 (from huggingface_hub[cli])
+  Using cached InquirerPy-0.3.4-py3-none-any.whl.metadata (8.1 kB)
+Collecting pfzy<0.4.0,>=0.3.1 (from InquirerPy==0.3.4->huggingface_hub[cli])
+  Using cached pfzy-0.3.4-py3-none-any.whl.metadata (4.9 kB)
+Requirement already satisfied: prompt-toolkit<4.0.0,>=3.0.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from InquirerPy==0.3.4->huggingface_hub[cli]) (3.0.36)
+Requirement already satisfied: wcwidth in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from prompt-toolkit<4.0.0,>=3.0.1->InquirerPy==0.3.4->huggingface_hub[cli]) (0.2.5)
+Requirement already satisfied: charset-normalizer<4,>=2 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from requests->huggingface_hub[cli]) (2.0.4)
+Requirement already satisfied: idna<4,>=2.5 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from requests->huggingface_hub[cli]) (3.4)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from requests->huggingface_hub[cli]) (1.26.16)
+Requirement already satisfied: certifi>=2017.4.17 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from requests->huggingface_hub[cli]) (2023.7.22)
+Using cached huggingface_hub-0.35.0-py3-none-any.whl (563 kB)
+Using cached InquirerPy-0.3.4-py3-none-any.whl (67 kB)
+Using cached hf_xet-1.1.10-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.2 MB)
+Using cached pfzy-0.3.4-py3-none-any.whl (8.5 kB)
+Using cached fsspec-2025.9.0-py3-none-any.whl (199 kB)
+Installing collected packages: pfzy, hf-xet, fsspec, InquirerPy, huggingface_hub
+  WARNING: The scripts hf, huggingface-cli and tiny-agents are installed in '/home/scur1018/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+s3fs 2023.4.0 requires fsspec==2023.4.0, but you have fsspec 2025.9.0 which is incompatible.
+Successfully installed InquirerPy-0.3.4 fsspec-2025.9.0 hf-xet-1.1.10 huggingface_hub-0.35.0 pfzy-0.3.4
+    To log in, `huggingface_hub` requires a token generated from https://huggingface.co/settings/tokens .
+/sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/getpass.py:91: GetPassWarning: Can not control echo on the terminal.
+  passwd = fallback_getpass(prompt, stream)
+Warning: Password input may be echoed.
+Enter your token (input will not be visible): [33m⚠️  Warning: 'huggingface-cli login' is deprecated. Use 'hf auth login' instead.[0m
+
+    _|    _|  _|    _|    _|_|_|    _|_|_|  _|_|_|  _|      _|    _|_|_|      _|_|_|_|    _|_|      _|_|_|  _|_|_|_|
+    _|    _|  _|    _|  _|        _|          _|    _|_|    _|  _|            _|        _|    _|  _|        _|
+    _|_|_|_|  _|    _|  _|  _|_|  _|  _|_|    _|    _|  _|  _|  _|  _|_|      _|_|_|    _|_|_|_|  _|        _|_|_|
+    _|    _|  _|    _|  _|    _|  _|    _|    _|    _|    _|_|  _|    _|      _|        _|    _|  _|        _|
+    _|    _|    _|_|      _|_|_|    _|_|_|  _|_|_|  _|      _|    _|_|_|      _|        _|    _|    _|_|_|  _|_|_|_|
+
+Traceback (most recent call last):
+  File "/sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/getpass.py", line 69, in unix_getpass
+    old = termios.tcgetattr(fd)     # a copy to save
+          ^^^^^^^^^^^^^^^^^^^^^
+termios.error: (25, 'Inappropriate ioctl for device')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/bin/huggingface-cli", line 11, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/scur1018/.local/lib/python3.11/site-packages/huggingface_hub/commands/huggingface_cli.py", line 61, in main
+    service.run()
+  File "/home/scur1018/.local/lib/python3.11/site-packages/huggingface_hub/commands/user.py", line 113, in run
+    login(
+  File "/home/scur1018/.local/lib/python3.11/site-packages/huggingface_hub/utils/_deprecation.py", line 101, in inner_f
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/scur1018/.local/lib/python3.11/site-packages/huggingface_hub/utils/_deprecation.py", line 31, in inner_f
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/scur1018/.local/lib/python3.11/site-packages/huggingface_hub/_login.py", line 130, in login
+    interpreter_login(new_session=new_session)
+  File "/home/scur1018/.local/lib/python3.11/site-packages/huggingface_hub/utils/_deprecation.py", line 101, in inner_f
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/scur1018/.local/lib/python3.11/site-packages/huggingface_hub/utils/_deprecation.py", line 31, in inner_f
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/scur1018/.local/lib/python3.11/site-packages/huggingface_hub/_login.py", line 287, in interpreter_login
+    token = getpass("Enter your token (input will not be visible): ")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/getpass.py", line 91, in unix_getpass
+    passwd = fallback_getpass(prompt, stream)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/getpass.py", line 126, in fallback_getpass
+    return _raw_input(prompt, stream)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/getpass.py", line 148, in _raw_input
+    raise EOFError
+EOFError
+Defaulting to user installation because normal site-packages is not writeable
+Collecting datasets<3,>=2.16.0
+  Using cached datasets-2.21.0-py3-none-any.whl.metadata (21 kB)
+Requirement already satisfied: fsspec>=2023.10.0 in /home/scur1018/.local/lib/python3.11/site-packages (2025.9.0)
+Requirement already satisfied: huggingface_hub>=0.20.0 in /home/scur1018/.local/lib/python3.11/site-packages (0.35.0)
+Collecting pyarrow<17,>=14
+  Downloading pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+Requirement already satisfied: filelock in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets<3,>=2.16.0) (3.9.0)
+Requirement already satisfied: numpy>=1.17 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets<3,>=2.16.0) (1.24.3)
+Requirement already satisfied: dill<0.3.9,>=0.3.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets<3,>=2.16.0) (0.3.6)
+Requirement already satisfied: pandas in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets<3,>=2.16.0) (1.5.3)
+Collecting requests>=2.32.2 (from datasets<3,>=2.16.0)
+  Using cached requests-2.32.5-py3-none-any.whl.metadata (4.9 kB)
+Collecting tqdm>=4.66.3 (from datasets<3,>=2.16.0)
+  Using cached tqdm-4.67.1-py3-none-any.whl.metadata (57 kB)
+Requirement already satisfied: xxhash in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets<3,>=2.16.0) (2.0.2)
+Requirement already satisfied: multiprocess in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets<3,>=2.16.0) (0.70.14)
+Collecting fsspec>=2023.10.0
+  Using cached fsspec-2024.6.1-py3-none-any.whl.metadata (11 kB)
+Requirement already satisfied: aiohttp in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets<3,>=2.16.0) (3.8.3)
+Requirement already satisfied: packaging in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets<3,>=2.16.0) (23.0)
+Requirement already satisfied: pyyaml>=5.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from datasets<3,>=2.16.0) (6.0)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in /home/scur1018/.local/lib/python3.11/site-packages (from huggingface_hub>=0.20.0) (4.15.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.3 in /home/scur1018/.local/lib/python3.11/site-packages (from huggingface_hub>=0.20.0) (1.1.10)
+Requirement already satisfied: attrs>=17.3.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets<3,>=2.16.0) (22.1.0)
+Requirement already satisfied: charset-normalizer<3.0,>=2.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets<3,>=2.16.0) (2.0.4)
+Requirement already satisfied: multidict<7.0,>=4.5 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets<3,>=2.16.0) (6.0.2)
+Requirement already satisfied: async-timeout<5.0,>=4.0.0a3 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets<3,>=2.16.0) (4.0.2)
+Requirement already satisfied: yarl<2.0,>=1.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets<3,>=2.16.0) (1.8.1)
+Requirement already satisfied: frozenlist>=1.1.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets<3,>=2.16.0) (1.3.3)
+Requirement already satisfied: aiosignal>=1.1.2 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from aiohttp->datasets<3,>=2.16.0) (1.2.0)
+Requirement already satisfied: idna>=2.0 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from yarl<2.0,>=1.0->aiohttp->datasets<3,>=2.16.0) (3.4)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from requests>=2.32.2->datasets<3,>=2.16.0) (1.26.16)
+Requirement already satisfied: certifi>=2017.4.17 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from requests>=2.32.2->datasets<3,>=2.16.0) (2023.7.22)
+Requirement already satisfied: python-dateutil>=2.8.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from pandas->datasets<3,>=2.16.0) (2.8.2)
+Requirement already satisfied: pytz>=2020.1 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from pandas->datasets<3,>=2.16.0) (2022.7)
+Requirement already satisfied: six>=1.5 in /sw/arch/RHEL8/EB_production/2023/software/Anaconda3/2023.07-2/lib/python3.11/site-packages (from python-dateutil>=2.8.1->pandas->datasets<3,>=2.16.0) (1.16.0)
+Using cached datasets-2.21.0-py3-none-any.whl (527 kB)
+Using cached fsspec-2024.6.1-py3-none-any.whl (177 kB)
+Downloading pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl (40.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40.8/40.8 MB 71.7 MB/s  0:00:00
+Using cached requests-2.32.5-py3-none-any.whl (64 kB)
+Using cached tqdm-4.67.1-py3-none-any.whl (78 kB)
+Installing collected packages: tqdm, requests, pyarrow, fsspec, datasets
+  WARNING: The script tqdm is installed in '/home/scur1018/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  Attempting uninstall: fsspec
+    Found existing installation: fsspec 2025.9.0
+    Uninstalling fsspec-2025.9.0:
+      Successfully uninstalled fsspec-2025.9.0
+  WARNING: The script datasets-cli is installed in '/home/scur1018/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+conda-repo-cli 1.0.41 requires requests_mock, which is not installed.
+conda-repo-cli 1.0.41 requires clyent==1.2.1, but you have clyent 1.2.2 which is incompatible.
+conda-repo-cli 1.0.41 requires nbformat==5.4.0, but you have nbformat 5.7.0 which is incompatible.
+conda-repo-cli 1.0.41 requires requests==2.28.1, but you have requests 2.32.5 which is incompatible.
+s3fs 2023.4.0 requires fsspec==2023.4.0, but you have fsspec 2024.6.1 which is incompatible.
+Successfully installed datasets-2.21.0 fsspec-2024.6.1 pyarrow-16.1.0 requests-2.32.5 tqdm-4.67.1
+Tue Sep 16 17:46:09 CEST 2025, Setup the environment ...
+Tue Sep 16 17:46:09 CEST 2025, Preparing dataset xsum_gpt-neo-2.7B ...
+Traceback (most recent call last):
+  File "scripts/data_builder.py", line 7, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+
+JOB STATISTICS
+==============
+Job ID: 14700558
+Cluster: snellius
+User/Group: scur1018/scur1018
+State: RUNNING
+Nodes: 1
+Cores per node: 9
+CPU Utilized: 00:00:00
+CPU Efficiency: 0.00% of 00:10:12 core-walltime
+Job Wall-clock time: 00:01:08
+Memory Utilized: 0.00 MB
+Memory Efficiency: 0.00% of 60.00 GB (60.00 GB/node)
+WARNING: Efficiency statistics can only be obtained after the job has ended as seff tool is based on the accounting database data.
