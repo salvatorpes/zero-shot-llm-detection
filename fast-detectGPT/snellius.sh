@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH --partition=gpu_a100
+#SBATCH --partition=gpu_mig
 #SBATCH --gpus=1
-#SBATCH --job-name=icl_create
+#SBATCH --job-name=fast-detectGPT
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --time=20:00:00
@@ -16,7 +16,7 @@ module load Anaconda3/2024.06-1
 cd $HOME/DL4NLP-Group15/fast-detectGPT
 
 # run the setup script (uncomment this once)
-bash setup.sh 
+# bash setup.sh 
 
 # activate your conda environment
 source activate fastdetectGPT
