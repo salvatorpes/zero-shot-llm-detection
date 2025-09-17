@@ -6,3 +6,4 @@ matplotlib
 tqdm
 openai
 nltk
+scikit-learn
