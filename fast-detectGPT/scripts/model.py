@@ -77,5 +77,5 @@ if __name__ == '__main__':
     parser.add_argument('--cache_dir', type=str, default="../cache")
     args = parser.parse_args()
 
-    load_tokenizer(args.model_name, 'xsum', args.cache_dir)
-    load_model(args.model_name, 'cpu', args.cache_dir)
+    load_tokenizer(args.model_name, args.cache_dir)
+    load_model(args.model_name, 'cuda', args.cache_dir)

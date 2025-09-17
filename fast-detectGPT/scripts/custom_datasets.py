@@ -12,7 +12,7 @@ def load_dataset(path, name=None, split=None, cache_dir=None):
     local_path = os.path.join(cache_dir, f'local.{path}_{name}_{split}')
     if os.path.exists(local_path):
         return datasets.load_from_disk(local_path)
-    return datasets.load_dataset(path, name, split=split, cache_dir=cache_dir)
+    return datasets.load_dataset(path, name, split=split, cache_dir=cache_dir, trust_remote_code=True)
 
 def load_pubmed(cache_dir):
     data = load_dataset('pubmed_qa', 'pqa_labeled', split='train', cache_dir=cache_dir)
