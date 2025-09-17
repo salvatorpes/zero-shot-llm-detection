@@ -16,7 +16,7 @@ module load Anaconda3/2024.06-1
 cd $HOME/DL4NLP-Group15/fast-detectGPT
 
 # run the setup script (uncomment this once)
-# bash setup.sh 
+bash setup.sh 
 
 # activate your conda environment
 source activate fastdetectGPT
