@@ -13,13 +13,14 @@ def from_pretrained(cls, model_name, kwargs, cache_dir):
     local_path = os.path.join(cache_dir, 'local.' + model_name.replace("/", "_"))
     if os.path.exists(local_path):
         return cls.from_pretrained(local_path, **kwargs)
-    return cls.from_pretrained(model_name, **kwargs, cache_dir=cache_dir)
+    return cls.from_pretrained(model_name, **kwargs, cache_dir=cache_dir, trust_remote_code=True)
 
 # predefined models
 model_fullnames = {  'gpt2': 'gpt2',
                      'gpt2-xl': 'gpt2-xl',
                      'gpt-oss-20b': 'openai/gpt-oss-20b',
                      'r1': 'deepseek-ai/DeepSeek-R1-0528-Qwen3-8B',
+                     'r1-8b': 'deepseek-ai/DeepSeek-R1-Distill-Llama-8B',
                      'opt-2.7b': 'facebook/opt-2.7b',
                      'gpt-neo-2.7B': 'EleutherAI/gpt-neo-2.7B',
                      'gpt-j-6B': 'EleutherAI/gpt-j-6B',

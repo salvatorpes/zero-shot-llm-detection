@@ -18,7 +18,7 @@ mkdir -p $exp_path $data_path $res_path
 datasets="xsum"
 # source_models="gpt2-xl opt-2.7b gpt-neo-2.7B gpt-j-6B gpt-neox-20b"
 # source_models="gpt-oss-20b"
-source_models="gpt-neo-2.7B"
+source_models="r1-8b"
 
 # preparing dataset
 for D in $datasets; do
