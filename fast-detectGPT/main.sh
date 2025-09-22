@@ -6,6 +6,7 @@
 
 # setup the environment
 echo `date`, Setup the environment ...
+export TOKENIZERS_PARALLELISM=false
 set -e  # exit if error
 
 # prepare folders
@@ -18,7 +19,7 @@ mkdir -p $exp_path $data_path $res_path
 datasets="xsum"
 # source_models="gpt2-xl opt-2.7b gpt-neo-2.7B gpt-j-6B gpt-neox-20b"
 # source_models="gpt-oss-20b"
-source_models="r1-8b"
+source_models="nvidia-9b"
 
 # preparing dataset
 for D in $datasets; do

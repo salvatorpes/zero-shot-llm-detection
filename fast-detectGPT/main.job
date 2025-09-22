@@ -5,11 +5,12 @@
 #SBATCH --job-name=main_fastdetectGPT
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=9
-#SBATCH --time=04:00:00
+#SBATCH --time=01:00:00
 #SBATCH --output=output/slurm_output_%A.out
 
 module purge
 module load 2023
+module load CUDA/12.4.0
 module load Anaconda3/2023.07-2
 # conda remove -n fastdetectGPT --all -y
 # conda create -n fastdetectGPT python=3.8 -y
@@ -19,7 +20,7 @@ source activate fastdetectGPT
 # pip install scikit-learn
 # pip install huggingface_hub
 # pip install -U "huggingface_hub[cli]"
-
+# pip install causal_conv1d mamba_ssm
 
 if command -v huggingface-cli >/dev/null 2>&1; then
 	if huggingface-cli whoami >/dev/null 2>&1; then
