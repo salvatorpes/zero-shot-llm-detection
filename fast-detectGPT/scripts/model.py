@@ -13,13 +13,15 @@ def from_pretrained(cls, model_name, kwargs, cache_dir):
     local_path = os.path.join(cache_dir, 'local.' + model_name.replace("/", "_"))
     if os.path.exists(local_path):
         return cls.from_pretrained(local_path, **kwargs)
-    return cls.from_pretrained(model_name, **kwargs, cache_dir=cache_dir)
+    return cls.from_pretrained(model_name, **kwargs, cache_dir=cache_dir, trust_remote_code=True)
 
 # predefined models
 model_fullnames = {  'gpt2': 'gpt2',
                      'gpt2-xl': 'gpt2-xl',
                      'gpt-oss-20b': 'openai/gpt-oss-20b',
                      'r1': 'deepseek-ai/DeepSeek-R1-0528-Qwen3-8B',
+                     'r1-8b': 'deepseek-ai/DeepSeek-R1-Distill-Llama-8B',
+                     'nvidia-9b': 'nvidia/NVIDIA-Nemotron-Nano-9B-v2',
                      'opt-2.7b': 'facebook/opt-2.7b',
                      'gpt-neo-2.7B': 'EleutherAI/gpt-neo-2.7B',
                      'gpt-j-6B': 'EleutherAI/gpt-j-6B',
@@ -36,6 +38,7 @@ model_fullnames = {  'gpt2': 'gpt2',
                      }
 float16_models = ['gpt-neo-2.7B', 'gpt-j-6B', 'gpt-neox-20b', 'llama-13b', 'llama2-13b', 'bloom-7b1', 'opt-13b',
                   'falcon-7b', 'falcon-7b-instruct']
+bf16_models = ['nvidia-9b']
 
 def get_model_fullname(model_name):
     return model_fullnames[model_name] if model_name in model_fullnames else model_name
@@ -46,6 +49,8 @@ def load_model(model_name, device, cache_dir):
     model_kwargs = {}
     if model_name in float16_models:
         model_kwargs.update(dict(torch_dtype=torch.float16))
+    if model_name in bf16_models:
+        model_kwargs.update(dict(torch_dtype=torch.bfloat16))
     if 'gpt-j' in model_name:
         model_kwargs.update(dict(revision='float16'))
     model = from_pretrained(AutoModelForCausalLM, model_fullname, model_kwargs, cache_dir)
