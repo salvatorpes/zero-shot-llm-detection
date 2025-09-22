@@ -44,6 +44,6 @@ fi
 
 
 # Run your code
-# bash main.sh
+bash main.sh
 # run a python script directly
-python scripts/gpt-oss-test.py
+# python scripts/gpt-oss-test.py

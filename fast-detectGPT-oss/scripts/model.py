@@ -35,7 +35,7 @@ model_fullnames = {  'gpt2': 'gpt2',
                      'falcon-7b-instruct': 'tiiuae/falcon-7b-instruct',
                      }
 float16_models = ['gpt-neo-2.7B', 'gpt-j-6B', 'gpt-neox-20b', 'llama-13b', 'llama2-13b', 'bloom-7b1', 'opt-13b',
-                  'falcon-7b', 'falcon-7b-instruct']
+                  'falcon-7b', 'falcon-7b-instruct', 'gpt-oss-20b']
 
 def get_model_fullname(model_name):
     return model_fullnames[model_name] if model_name in model_fullnames else model_name
