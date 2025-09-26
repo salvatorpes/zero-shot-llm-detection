@@ -36,6 +36,7 @@ model_fullnames = {  'gpt2': 'gpt2',
                      'falcon-7b': 'tiiuae/falcon-7b',
                      'falcon-7b-instruct': 'tiiuae/falcon-7b-instruct',
                      'qwen3-4b': 'Qwen/Qwen3-4B-Instruct-2507',
+                     'phi-2': 'microsoft/phi-2',
                      }
 float16_models = ['gpt-neo-2.7B', 'gpt-j-6B', 'gpt-neox-20b', 'llama-13b', 'llama2-13b', 'bloom-7b1', 'opt-13b',
                   'falcon-7b', 'falcon-7b-instruct']

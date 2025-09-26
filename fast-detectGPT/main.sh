@@ -16,12 +16,13 @@ res_path=$exp_path/results
 mkdir -p $exp_path $data_path $res_path
 
 # datasets="xsum squad writing" (ORIGINAL)
-datasets="xsum"
+datasets="hc3"
 # source_models="gpt2-xl opt-2.7b gpt-neo-2.7B gpt-j-6B gpt-neox-20b" (ORIGINAL)
 # source_models="gpt-oss-20b"
 # source_models="nvidia-9b" (WORKS)
 # source_models="r1-8b" (WORKS)
-source_models="qwen3-4b"
+# source_models="nvidia-9b" (WORKS WITH XSUM BUT NOT HC3)
+source_models="phi-2"
 
 # preparing dataset
 for D in $datasets; do
@@ -72,12 +73,12 @@ done
 
 # Black-box Setting
 echo `date`, Evaluate models in the black-box setting:
-scoring_models="gpt-neo-2.7B"
+scoring_models="nvidia-9b"
 
 # evaluate Fast-DetectGPT
 for D in $datasets; do
   for M in $source_models; do
-    M1=gpt-j-6B  # sampling model
+    M1=nvidia-9b # sampling model
     for M2 in $scoring_models; do
       echo `date`, Evaluating Fast-DetectGPT on ${D}_${M}.${M1}_${M2} ...
       python scripts/fast_detect_gpt.py --sampling_model_name ${M1} --scoring_model_name ${M2} --dataset $D \
