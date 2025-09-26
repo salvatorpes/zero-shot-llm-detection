@@ -18,10 +18,8 @@ def from_pretrained(cls, model_name, kwargs, cache_dir):
 # predefined models
 model_fullnames = {  'gpt2': 'gpt2',
                      'gpt2-xl': 'gpt2-xl',
-                     'gpt-oss-20b': 'openai/gpt-oss-20b',
-                     'r1': 'deepseek-ai/DeepSeek-R1-0528-Qwen3-8B',
                      'r1-8b': 'deepseek-ai/DeepSeek-R1-Distill-Llama-8B',
-                     'qwen3-4b': 'Qwen/Qwen3-4B-Instruct-2507',
+                     'phi-2': 'microsoft/phi-2',
                      'nvidia-9b': 'nvidia/NVIDIA-Nemotron-Nano-9B-v2',
                      'opt-2.7b': 'facebook/opt-2.7b',
                      'gpt-neo-2.7B': 'EleutherAI/gpt-neo-2.7B',
