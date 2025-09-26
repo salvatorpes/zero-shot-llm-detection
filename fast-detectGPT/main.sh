@@ -7,7 +7,7 @@
 # setup the environment
 echo `date`, Setup the environment ...
 export TOKENIZERS_PARALLELISM=false
-set -e  # exit if error
+# set -e  # exit if error
 
 # prepare folders
 exp_path=exp_main
@@ -15,11 +15,13 @@ data_path=$exp_path/data
 res_path=$exp_path/results
 mkdir -p $exp_path $data_path $res_path
 
-# datasets="xsum squad writing"
+# datasets="xsum squad writing" (ORIGINAL)
 datasets="xsum"
-# source_models="gpt2-xl opt-2.7b gpt-neo-2.7B gpt-j-6B gpt-neox-20b"
+# source_models="gpt2-xl opt-2.7b gpt-neo-2.7B gpt-j-6B gpt-neox-20b" (ORIGINAL)
 # source_models="gpt-oss-20b"
-source_models="nvidia-9b"
+# source_models="nvidia-9b" (WORKS)
+# source_models="r1-8b" (WORKS)
+source_models="qwen3-4b"
 
 # preparing dataset
 for D in $datasets; do
@@ -32,7 +34,7 @@ done
 # White-box Setting
 echo `date`, Evaluate models in the white-box setting:
 
-# evaluate Fast-DetectGPT and fast baselines
+# Evaluate Fast-DetectGPT and fast baselines
 for D in $datasets; do
   for M in $source_models; do
     echo `date`, Evaluating Fast-DetectGPT on ${D}_${M} ...

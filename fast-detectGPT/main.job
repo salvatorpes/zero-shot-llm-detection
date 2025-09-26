@@ -21,6 +21,9 @@ source activate fastdetectGPT
 # pip install huggingface_hub
 # pip install -U "huggingface_hub[cli]"
 # pip install causal_conv1d mamba_ssm
+# pip install -U datasets
+# pip install -U vllm 
+# pip install -U transformers
 
 if command -v huggingface-cli >/dev/null 2>&1; then
 	if huggingface-cli whoami >/dev/null 2>&1; then
