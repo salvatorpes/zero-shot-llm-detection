@@ -18,10 +18,6 @@ def from_pretrained(cls, model_name, kwargs, cache_dir):
 # predefined models
 model_fullnames = {  'gpt2': 'gpt2',
                      'gpt2-xl': 'gpt2-xl',
-                     'gpt-oss-20b': 'openai/gpt-oss-20b',
-                     'r1': 'deepseek-ai/DeepSeek-R1-0528-Qwen3-8B',
-                     'r1-8b': 'deepseek-ai/DeepSeek-R1-Distill-Llama-8B',
-                     'nvidia-9b': 'nvidia/NVIDIA-Nemotron-Nano-9B-v2',
                      'opt-2.7b': 'facebook/opt-2.7b',
                      'gpt-neo-2.7B': 'EleutherAI/gpt-neo-2.7B',
                      'gpt-j-6B': 'EleutherAI/gpt-j-6B',
@@ -35,8 +31,10 @@ model_fullnames = {  'gpt2': 'gpt2',
                      'opt-13b': 'facebook/opt-13b',
                      'falcon-7b': 'tiiuae/falcon-7b',
                      'falcon-7b-instruct': 'tiiuae/falcon-7b-instruct',
-                     'qwen3-4b': 'Qwen/Qwen3-4B-Instruct-2507',
-                     'phi-2': 'microsoft/phi-2',
+                     'r1-8b': 'deepseek-ai/DeepSeek-R1-Distill-Llama-8B', # ours
+                     'phi-2': 'microsoft/phi-2', # ours
+                     'mistral-7b': 'mistralai/Mistral-7B-Instruct-v0.2' # ours
+                     'gpt-oss-20b': 'openai/gpt-oss-20b', # ours (but too big)
                      }
 float16_models = ['gpt-neo-2.7B', 'gpt-j-6B', 'gpt-neox-20b', 'llama-13b', 'llama2-13b', 'bloom-7b1', 'opt-13b',
                   'falcon-7b', 'falcon-7b-instruct']
