@@ -14,24 +14,44 @@ from data_builder import load_data
 from model import load_tokenizer, load_model
 from metrics import get_roc_metrics, get_precision_recall_metrics
 
-def get_samples(logits, labels):
+def get_samples(logits, labels, top_k=None):
     assert logits.shape[0] == 1
     assert labels.shape[0] == 1
     nsamples = 10000
-    lprobs = torch.log_softmax(logits, dim=-1)
+    
+    if top_k is not None:
+        # Limit to top-k logits for API compatibility
+        topk_logits, topk_indices = torch.topk(logits, k=top_k, dim=-1)
+        # Create a mask for the original vocabulary size
+        masked_logits = torch.full_like(logits, float('-inf'))
+        masked_logits.scatter_(-1, topk_indices, topk_logits)
+        lprobs = torch.log_softmax(masked_logits, dim=-1)
+    else:
+        lprobs = torch.log_softmax(logits, dim=-1)
+    
     distrib = torch.distributions.categorical.Categorical(logits=lprobs)
     samples = distrib.sample([nsamples]).permute([1, 2, 0])
     return samples
 
-def get_likelihood(logits, labels):
+def get_likelihood(logits, labels, top_k=None):
     assert logits.shape[0] == 1
     assert labels.shape[0] == 1
     labels = labels.unsqueeze(-1) if labels.ndim == logits.ndim - 1 else labels
-    lprobs = torch.log_softmax(logits, dim=-1)
+    
+    if top_k is not None:
+        # Limit to top-k logits for API compatibility
+        topk_logits, topk_indices = torch.topk(logits, k=top_k, dim=-1)
+        # Create a mask for the original vocabulary size
+        masked_logits = torch.full_like(logits, float('-inf'))
+        masked_logits.scatter_(-1, topk_indices, topk_logits)
+        lprobs = torch.log_softmax(masked_logits, dim=-1)
+    else:
+        lprobs = torch.log_softmax(logits, dim=-1)
+    
     log_likelihood = lprobs.gather(dim=-1, index=labels)
     return log_likelihood.mean(dim=1)
 
-def get_sampling_discrepancy(logits_ref, logits_score, labels):
+def get_sampling_discrepancy(logits_ref, logits_score, labels, top_k=None):
     assert logits_ref.shape[0] == 1
     assert logits_score.shape[0] == 1
     assert labels.shape[0] == 1
@@ -41,15 +61,15 @@ def get_sampling_discrepancy(logits_ref, logits_score, labels):
         logits_ref = logits_ref[:, :, :vocab_size]
         logits_score = logits_score[:, :, :vocab_size]
 
-    samples = get_samples(logits_ref, labels)
-    log_likelihood_x = get_likelihood(logits_score, labels)
-    log_likelihood_x_tilde = get_likelihood(logits_score, samples)
+    samples = get_samples(logits_ref, labels, top_k)
+    log_likelihood_x = get_likelihood(logits_score, labels, top_k)
+    log_likelihood_x_tilde = get_likelihood(logits_score, samples, top_k)
     miu_tilde = log_likelihood_x_tilde.mean(dim=-1)
     sigma_tilde = log_likelihood_x_tilde.std(dim=-1)
     discrepancy = (log_likelihood_x.squeeze(-1) - miu_tilde) / sigma_tilde
     return discrepancy.item()
 
-def get_sampling_discrepancy_analytic(logits_ref, logits_score, labels):
+def get_sampling_discrepancy_analytic(logits_ref, logits_score, labels, top_k=None):
     assert logits_ref.shape[0] == 1
     assert logits_score.shape[0] == 1
     assert labels.shape[0] == 1
@@ -60,8 +80,33 @@ def get_sampling_discrepancy_analytic(logits_ref, logits_score, labels):
         logits_score = logits_score[:, :, :vocab_size]
 
     labels = labels.unsqueeze(-1) if labels.ndim == logits_score.ndim - 1 else labels
-    lprobs_score = torch.log_softmax(logits_score, dim=-1)
-    probs_ref = torch.softmax(logits_ref, dim=-1)
+    
+    if top_k is not None:
+        # Limit to top-k logits for both reference and scoring models
+        topk_logits_ref, topk_indices_ref = torch.topk(logits_ref, k=top_k, dim=-1)
+        topk_logits_score, topk_indices_score = torch.topk(logits_score, k=top_k, dim=-1)
+        
+        # Use union of top-k indices from both models to ensure label tokens are included
+        # This is crucial for API scenarios where we need to ensure label tokens are available
+        all_indices = torch.cat([topk_indices_ref, topk_indices_score, labels.expand_as(topk_indices_ref[:,:,:1])], dim=-1)
+        unique_indices = torch.unique(all_indices, dim=-1)
+        k_effective = min(top_k, unique_indices.size(-1))
+        
+        # Create masked versions
+        masked_logits_ref = torch.full_like(logits_ref, float('-inf'))
+        masked_logits_score = torch.full_like(logits_score, float('-inf'))
+        
+        masked_logits_ref.scatter_(-1, unique_indices[:,:,:k_effective], 
+                                  logits_ref.gather(-1, unique_indices[:,:,:k_effective]))
+        masked_logits_score.scatter_(-1, unique_indices[:,:,:k_effective], 
+                                    logits_score.gather(-1, unique_indices[:,:,:k_effective]))
+        
+        lprobs_score = torch.log_softmax(masked_logits_score, dim=-1)
+        probs_ref = torch.softmax(masked_logits_ref, dim=-1)
+    else:
+        lprobs_score = torch.log_softmax(logits_score, dim=-1)
+        probs_ref = torch.softmax(logits_ref, dim=-1)
+    
     log_likelihood = lprobs_score.gather(dim=-1, index=labels).squeeze(-1)
     mean_ref = (probs_ref * lprobs_score).sum(dim=-1)
     var_ref = (probs_ref * torch.square(lprobs_score)).sum(dim=-1) - torch.square(mean_ref)
@@ -88,6 +133,10 @@ def experiment(args):
     else:
         name = "sampling_discrepancy"
         criterion_fn = get_sampling_discrepancy
+    
+    # Add top_k suffix to name if using limited logits
+    if hasattr(args, 'top_k_logits') and args.top_k_logits is not None:
+        name += f"_top{args.top_k_logits}"
 
     random.seed(args.seed)
     torch.manual_seed(args.seed)
@@ -107,7 +156,8 @@ def experiment(args):
                 tokenized = sampling_tokenizer(original_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
                 assert torch.all(tokenized.input_ids[:, 1:] == labels), "Tokenizer is mismatch."
                 logits_ref = sampling_model(**tokenized).logits[:, :-1]
-            original_crit = criterion_fn(logits_ref, logits_score, labels)
+            top_k_param = getattr(args, 'top_k_logits', None)
+            original_crit = criterion_fn(logits_ref, logits_score, labels, top_k_param)
         # sampled text
         tokenized = scoring_tokenizer(sampled_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
         labels = tokenized.input_ids[:, 1:]
@@ -119,7 +169,7 @@ def experiment(args):
                 tokenized = sampling_tokenizer(sampled_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
                 assert torch.all(tokenized.input_ids[:, 1:] == labels), "Tokenizer is mismatch."
                 logits_ref = sampling_model(**tokenized).logits[:, :-1]
-            sampled_crit = criterion_fn(logits_ref, logits_score, labels)
+            sampled_crit = criterion_fn(logits_ref, logits_score, labels, top_k_param)
         # result
         results.append({"original": original_text,
                         "original_crit": original_crit,
@@ -154,6 +204,8 @@ if __name__ == '__main__':
     parser.add_argument('--sampling_model_name', type=str, default="falcon-7b")
     parser.add_argument('--scoring_model_name', type=str, default="falcon-7b-instruct")
     parser.add_argument('--discrepancy_analytic', action='store_true')
+    parser.add_argument('--top_k_logits', type=int, default=None, 
+                       help='Limit computation to top-k logits for API compatibility (e.g., 20)')
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--device', type=str, default="cuda")
     parser.add_argument('--cache_dir', type=str, default="../cache")

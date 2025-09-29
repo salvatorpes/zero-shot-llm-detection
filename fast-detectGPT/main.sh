@@ -19,7 +19,7 @@ mkdir -p $exp_path $data_path $res_path
 datasets="xsum"
 # source_models="gpt2-xl opt-2.7b gpt-neo-2.7B gpt-j-6B gpt-neox-20b"
 # source_models="gpt-oss-20b"
-source_models="qwen3-4b"
+source_models="phi-2"
 
 # preparing dataset
 for D in $datasets; do
@@ -37,7 +37,7 @@ for D in $datasets; do
   for M in $source_models; do
     echo `date`, Evaluating Fast-DetectGPT on ${D}_${M} ...
     python scripts/fast_detect_gpt.py --sampling_model_name $M --scoring_model_name $M --dataset $D \
-                          --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}
+                          --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M} --top_k_logits 20
 
     echo `date`, Evaluating baseline methods on ${D}_${M} ...
     python scripts/baselines.py --scoring_model_name $M --dataset $D \
@@ -79,7 +79,7 @@ for D in $datasets; do
     for M2 in $scoring_models; do
       echo `date`, Evaluating Fast-DetectGPT on ${D}_${M}.${M1}_${M2} ...
       python scripts/fast_detect_gpt.py --sampling_model_name ${M1} --scoring_model_name ${M2} --dataset $D \
-                          --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}.${M1}_${M2}
+                          --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}.${M1}_${M2} --top_k_logits 20
     done
   done
 done
