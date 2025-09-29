@@ -33,7 +33,7 @@ model_fullnames = {  'gpt2': 'gpt2',
                      'falcon-7b-instruct': 'tiiuae/falcon-7b-instruct',
                      'r1-8b': 'deepseek-ai/DeepSeek-R1-Distill-Llama-8B', # ours
                      'phi-2': 'microsoft/phi-2', # ours
-                     'mistral-7b': 'mistralai/Mistral-7B-Instruct-v0.2' # ours
+                     'mistral-7b': 'mistralai/Mistral-7B-Instruct-v0.2', # ours
                      'gpt-oss-20b': 'openai/gpt-oss-20b', # ours (but too big)
                      }
 float16_models = ['gpt-neo-2.7B', 'gpt-j-6B', 'gpt-neox-20b', 'llama-13b', 'llama2-13b', 'bloom-7b1', 'opt-13b',
