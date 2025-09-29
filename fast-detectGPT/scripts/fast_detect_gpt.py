@@ -20,7 +20,7 @@ def get_samples(logits, labels):
     nsamples = 10000
 
     # Set vocabulary limit for top-k sampling (None = use full vocabulary)
-    vocab_limit = 20
+    vocab_limit = None
 
     if vocab_limit is not None:
         #top k sampling
