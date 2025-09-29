@@ -18,9 +18,22 @@ def get_samples(logits, labels):
     assert logits.shape[0] == 1
     assert labels.shape[0] == 1
     nsamples = 10000
-    lprobs = torch.log_softmax(logits, dim=-1)
-    distrib = torch.distributions.categorical.Categorical(logits=lprobs)
-    samples = distrib.sample([nsamples]).permute([1, 2, 0])
+
+    # Set vocabulary limit for top-k sampling (None = use full vocabulary)
+    vocab_limit = 20
+
+    if vocab_limit is not None:
+        #top k sampling
+        top_k_logits, top_k_indices = torch.topk(logits, vocab_limit, dim=-1)
+        lprobs = torch.log_softmax(top_k_logits, dim=-1)
+        distrib = torch.distributions.categorical.Categorical(logits=lprobs)
+        top_k_samples = distrib.sample([nsamples]).permute([1, 2, 0])
+        samples = top_k_indices.gather(dim=-1, index=top_k_samples)
+
+    else:
+        lprobs = torch.log_softmax(logits, dim=-1)
+        distrib = torch.distributions.categorical.Categorical(logits=lprobs)
+        samples = distrib.sample([nsamples]).permute([1, 2, 0])
     return samples
 
 def get_likelihood(logits, labels):
