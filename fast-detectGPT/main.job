@@ -2,10 +2,10 @@
 
 #SBATCH --partition=gpu_a100
 #SBATCH --gpus=1
-#SBATCH --job-name=main_fastdetectGPT
+#SBATCH --job-name=Whitebox
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=9
-#SBATCH --time=01:00:00
+#SBATCH --time=12:00:00
 #SBATCH --output=output/slurm_output_%A.out
 
 module purge
@@ -21,6 +21,9 @@ source activate fastdetectGPT
 # pip install huggingface_hub
 # pip install -U "huggingface_hub[cli]"
 # pip install causal_conv1d mamba_ssm
+# pip install -U datasets
+# pip install -U vllm 
+# pip install -U transformers
 
 if command -v huggingface-cli >/dev/null 2>&1; then
 	if huggingface-cli whoami >/dev/null 2>&1; then

@@ -5,14 +5,14 @@ import datasets
 SEPARATOR = '<<<SEP>>>'
 
 
-DATASETS = ['writing', 'english', 'german', 'pubmed']
+DATASETS = ['writing', 'english', 'german', 'pubmed', 'hc3']
 
 def load_dataset(path, name=None, split=None, cache_dir=None):
     # use local model if it exists
     local_path = os.path.join(cache_dir, f'local.{path}_{name}_{split}')
     if os.path.exists(local_path):
         return datasets.load_from_disk(local_path)
-    return datasets.load_dataset(path, name, split=split, cache_dir=cache_dir, trust_remote_code=True)
+    return datasets.load_dataset(path, name, split=split, cache_dir=cache_dir)
 
 def load_pubmed(cache_dir):
     data = load_dataset('pubmed_qa', 'pqa_labeled', split='train', cache_dir=cache_dir)
@@ -68,6 +68,9 @@ def load_writing(cache_dir=None):
 
     return filtered
 
+def load_hc3(cache_dir=None):
+    dataset = datasets.load_dataset("Hello-SimpleAI/HC3", "all", split="train", cache_dir=cache_dir)
+    return [entry[0] for entry in dataset["human_answers"]]
 
 def load_language(language, cache_dir):
     # load either the english or german portion of the wmt16 dataset
