@@ -400,6 +400,69 @@ def report_maxlen_trends(args):
         json.dump(results, fout)
         print(f'Write to file {json_file}')
 
+def report_new_models_results(args):
+    datasets = {'xsum': 'XSum',
+                'hc3': 'HC3'}
+    source_models = {'r1-8b': 'R1-8B',
+                    'phi-2': 'Phi-2',
+                    'mistral-7b': 'Mistral-7B'}
+    methods1 = {'likelihood': 'Likelihood',
+               'entropy': 'Entropy',
+               'logrank': 'LogRank',
+               'lrr': 'LRR',
+               'npr': 'NPR'}
+    methods2 = {'perturbation_100': 'DetectGPT',
+               'sampling_discrepancy': 'Fast-DetectGPT'}
+
+    def _get_method_aurocs(dataset, method, filter=''):
+        cols = []
+        for model in source_models:
+            result_file = f'{args.result_path}/{dataset}_{model}{filter}.{method}.json'
+            if os.path.exists(result_file):
+                auroc = get_auroc(result_file)
+            else:
+                auroc = 0.0
+            cols.append(auroc)
+        cols.append(np.mean(cols))
+        return cols
+
+    headers = ['Method'] + [source_models[model] for model in source_models] + ['Avg.']
+    for dataset in datasets:
+        print('----')
+        print(datasets[dataset])
+        print('----')
+        print(' '.join(headers))
+        # basic methods
+        for method in methods1:
+            method_name = methods1[method]
+            cols = _get_method_aurocs(dataset, method)
+            cols = [f'{col:.4f}' for col in cols]
+            print(method_name, ' '.join(cols))
+        # white-box comparison
+        results = {}
+        for method in methods2:
+            method_name = methods2[method]
+            cols = _get_method_aurocs(dataset, method)
+            results[method_name] = cols
+            cols = [f'{col:.4f}' for col in cols]
+            print(method_name, ' '.join(cols))
+        cols = np.array(results['Fast-DetectGPT']) - np.array(results['DetectGPT'])
+        cols = [f'{col:.4f}' for col in cols]
+        print('(Diff)', ' '.join(cols))
+        # black-box comparison
+        filters = {'perturbation_100': '.t5-3b_gpt-neo-2.7B',
+                    'sampling_discrepancy': '.gpt-j-6B_gpt-neo-2.7B'}
+        results = {}
+        for method in methods2:
+            method_name = methods2[method]
+            cols = _get_method_aurocs(dataset, method, filters[method])
+            results[method_name] = cols
+            cols = [f'{col:.4f}' for col in cols]
+            print(method_name, ' '.join(cols))
+        cols = np.array(results['Fast-DetectGPT']) - np.array(results['DetectGPT'])
+        cols = [f'{col:.4f}' for col in cols]
+        print('(Diff)', ' '.join(cols))
+
 def report_auroc_curve(args):
     datasets = {'xsum': 'XSum',
                 'writing': 'WritingPrompts'}
@@ -488,3 +551,5 @@ if __name__ == '__main__':
         report_auroc_curve(args)
     elif args.report_name == 'refmodel_results':
         report_refmodel_results(args)
+    elif args.report_name == 'new_models_results':
+        report_new_models_results(args)

@@ -31,6 +31,7 @@ def get_likelihood(logits, labels):
     log_likelihood = lprobs.gather(dim=-1, index=labels)
     return log_likelihood.mean(dim=1)
 
+# this is the actual fastdetectGPT
 def get_sampling_discrepancy(logits_ref, logits_score, labels):
     assert logits_ref.shape[0] == 1
     assert logits_score.shape[0] == 1
