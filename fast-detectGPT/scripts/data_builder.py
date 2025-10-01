@@ -13,6 +13,8 @@ import os
 import json
 import custom_datasets
 from model import load_tokenizer, load_model
+from transformers.generation.logits_process import LogitsProcessor, LogitsProcessorList
+
 
 
 def save_data(output_file, args, data):
@@ -36,6 +38,87 @@ def load_data(input_file):
         print(f"Raw data loaded from {data_file}")
     return data
 
+class MidKLogitsProcessor(LogitsProcessor):
+    """
+    MID-K with start position:
+    - Choose `num_positions` random decoding positions counted over *new* tokens only,
+      but only from the range [start_pos, max_new].
+    - At those positions, ban the top `limit` logits (set to -inf) so sampling happens
+      from the "tail" (opposite of top-k at those steps).
+
+    Terms:
+      *new token position* = 1 for the first generated token after the prompt,
+                             2 for the second, etc.
+
+    Notes:
+    - Positions are chosen per sequence with RNG seeded by (seed + seq_idx).
+    - If `limit >= vocab_size`, we cap it to leave at least one token available.
+    - If `start_pos > max_new` or `num_positions == 0`, nothing happens for that seq.
+    - If `num_positions` > (#available positions from start), we cap it.
+    """
+
+    def __init__(
+        self,
+        num_positions: int,     # how many random positions to apply mid-k (per sequence)
+        limit: int,             # how many highest-prob tokens to ban at those positions
+        start_pos: int,         # 1-indexed new-token position to start considering (inclusive)
+        max_total_length: int,  # same as generate(max_length=...)
+        init_lengths,           # list[int]: prompt lengths per sequence (from attention_mask)
+        seed: int = 0
+    ):
+        self.num_positions = max(0, int(num_positions))
+        self.limit = max(0, int(limit))
+        self.start_pos = max(1, int(start_pos))  # clamp to at least 1
+        self.max_total_length = int(max_total_length)
+        self.init_lengths = [int(l) for l in init_lengths]
+        self.seed = int(seed)
+
+        # per-sequence chosen new-token positions (1..max_new)
+        self._chosen_positions = [None] * len(self.init_lengths)
+
+    def _ensure_positions_for_seq(self, seq_idx: int):
+        """Sample which new-token positions to apply mid-k for this sequence."""
+        if self._chosen_positions[seq_idx] is not None:
+            return
+        import random as pyrand
+        rng = pyrand.Random(self.seed + seq_idx)
+
+        init_len = self.init_lengths[seq_idx]
+        max_new = max(0, self.max_total_length - init_len)
+
+        if max_new <= 0 or self.start_pos > max_new or self.num_positions <= 0:
+            self._chosen_positions[seq_idx] = set()
+            return
+
+        # available positions are [start_pos, max_new] inclusive
+        choices = list(range(self.start_pos, max_new + 1))
+        eff_num = min(self.num_positions, len(choices))
+        self._chosen_positions[seq_idx] = set(rng.sample(choices, eff_num))
+
+    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
+        """
+        input_ids: (batch, cur_len)
+        scores:    (batch, vocab)  # next-token logits at this decoding position
+        """
+        batch_size, cur_len = input_ids.shape
+        vocab_size = scores.shape[-1]
+
+        for b in range(batch_size):
+            self._ensure_positions_for_seq(b)
+            init_len = self.init_lengths[b]
+
+            # new-token position (1, 2, 3, ...) relative to the prompt
+            new_pos = cur_len - init_len
+            if new_pos <= 0:
+                continue  # still producing prompt (shouldn't happen during generate, but safe)
+
+            if new_pos in self._chosen_positions[b]:
+                eff_limit = min(self.limit, vocab_size - 1)  # keep ≥1 token unbanned
+                if eff_limit > 0:
+                    top_idx = torch.topk(scores[b], eff_limit).indices
+                    scores[b, top_idx] = float('-inf')
+
+        return scores
 
 class DataBuilder:
     def __init__(self, args):
@@ -142,9 +225,25 @@ class DataBuilder:
                 elif self.args.do_temperature:
                     sampling_kwargs['temperature'] = self.args.temperature
                 min_length = 50 if self.args.dataset in ['pubmed'] else 150
+                logits_processor = None
+                if (getattr(self.args, "do_mid_k", False)
+                    and self.args.mid_k_num_positions > 0
+                    and self.args.mid_k_limit > 0):
+
+                    init_lens = all_encoded['attention_mask'].sum(dim=1).tolist()
+
+                    midk = MidKLogitsProcessor(
+                        num_positions=self.args.mid_k_num_positions,
+                        limit=self.args.mid_k_limit,
+                        start_pos=self.args.mid_k_start_pos,   # NEW
+                        max_total_length=200,                   # same as your generate(max_length)
+                        init_lengths=init_lens,
+                        seed=self.args.seed,
+                    )
+                    logits_processor = LogitsProcessorList([midk])
                 outputs = self.base_model.generate(**all_encoded, min_length=min_length, max_length=200, do_sample=True,
                                                    **sampling_kwargs, pad_token_id=self.base_tokenizer.eos_token_id,
-                                                   eos_token_id=self.base_tokenizer.eos_token_id)
+                                                   eos_token_id=self.base_tokenizer.eos_token_id,logits_processor=logits_processor)
                 decoded = self.base_tokenizer.batch_decode(outputs, skip_special_tokens=True)
                 m = min(len(x.split()) for x in decoded)
                 tries += 1
@@ -258,6 +357,14 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--device', type=str, default="cuda")
     parser.add_argument('--cache_dir', type=str, default="../cache")
+    parser.add_argument('--do_mid_k', action='store_true',
+        help='Enable mid-k: at randomly chosen new-token positions, ban the top-N tokens.')
+    parser.add_argument('--mid_k_num_positions', type=int, default=0,
+        help='How many random new-token positions to apply mid-k at (per sequence).')
+    parser.add_argument('--mid_k_limit', type=int, default=0,
+        help='How many highest-probability tokens to ban at those positions.')
+    parser.add_argument('--mid_k_start_pos', type=int, default=1,
+        help='1-indexed new-token position to start sampling mid-k positions from (inclusive).')
     args = parser.parse_args()
 
     os.environ["XDG_CACHE_HOME"] = args.cache_dir
