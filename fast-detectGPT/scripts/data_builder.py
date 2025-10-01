@@ -12,8 +12,15 @@ import argparse
 import os
 import json
 import custom_datasets
-from model import load_tokenizer, load_model
+from openai import OpenAI
+from dotenv import load_dotenv
+from openai_model import OpenAIModel
+from model import load_tokenizer, load_model, openai_models
 
+load_dotenv()
+OPENAI_ORG_ID = os.getenv("OPENAI_ORG_ID")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL")
 
 def save_data(output_file, args, data):
     # write args to file
@@ -28,7 +35,6 @@ def save_data(output_file, args, data):
         json.dump(data, fout, indent=4)
         print(f"Raw data written into {data_file}")
 
-
 def load_data(input_file):
     data_file = f"{input_file}.raw_data.json"
     with open(data_file, "r") as fin:
@@ -38,60 +44,11 @@ def load_data(input_file):
 
 
 class DataBuilder:
+
     def __init__(self, args):
         self.args = args
         self.base_tokenizer = load_tokenizer(args.base_model_name, args.cache_dir)
-        self.base_model = None if args.openai_model else load_model(args.base_model_name, args.device, args.cache_dir)
-
-    def _openai_sample(self, prefix):
-        def _drop_last_word(text):
-            return ' '.join(text.split(' ')[:-1])
-
-        import openai
-        assert self.args.openai_key is not None, "Must provide OpenAI API key as --openai_key"
-        openai.api_key = self.args.openai_key
-        if self.args.openai_base is not None:
-            openai.api_base = self.args.openai_base
-
-        if self.args.dataset != 'pubmed':  # keep Answer: prefix for pubmed
-            prefix = _drop_last_word(prefix)
-
-        # sample from the openai model
-        kwargs = {"max_tokens": 200}
-        if self.args.do_top_p:
-            kwargs['top_p'] = self.args.top_p
-        elif self.args.do_top_k:
-            kwargs['top_k'] = self.args.top_k
-        elif self.args.do_temperature:
-            kwargs['temperature'] = self.args.temperature
-
-        if self.args.openai_model == 'davinci':
-            kwargs["engine"] = self.args.openai_model
-            response = openai.Completion.create(prompt=f"{prefix}", **kwargs)
-            return prefix + response['choices'][0]['text']
-
-        elif self.args.openai_model in ['gpt-3.5-turbo', 'gpt-4']:
-            roles = {'xsum': 'You are a News writer.',
-                     'writing': 'You are a Fiction writer.',
-                     'pubmed': 'You are a Technical writer.'}
-            prompts = {'xsum': 'Please write an article with about 150 words starting exactly with:',
-                       'writing': 'Please write an article with about 150 words starting exactly with:',
-                       'pubmed': 'Please answer the question in about 50 words.'}
-            messages = [
-                {'role': 'system', 'content': roles[self.args.dataset]},
-                {'role': 'user', 'content': f'{prompts[self.args.dataset]} {prefix}'},
-            ]
-            kwargs["model"] = self.args.openai_model
-            kwargs["messages"] = messages
-            response = openai.ChatCompletion.create(**kwargs)
-            response = response['choices'][0]['message']['content']
-            # ChatGPT may repeat the prefix
-            if response.startswith(prefix[:20]):
-                return response
-            return prefix + ' ' + response
-
-        else:
-            raise NotImplementedError
+        self.base_model = load_model(args.base_model_name, args.device, args.cache_dir)
 
     # sample from base_model using ****only**** the first 30 tokens in each example as context
     def _sample_from_model(self, texts, min_words=55, prompt_tokens=30):
@@ -103,7 +60,9 @@ class DataBuilder:
             all_encoded = self.base_tokenizer(texts, return_tensors="pt", padding=True, return_token_type_ids=False).to(self.args.device)
             all_encoded = {key: value[:, :prompt_tokens] for key, value in all_encoded.items()}
 
-        if self.args.openai_model:
+        is_openai_model = self.args.base_model_name in openai_models
+
+        if is_openai_model:
             # decode the prefixes back into text
             prefixes = self.base_tokenizer.batch_decode(all_encoded['input_ids'], skip_special_tokens=True)
 
@@ -111,7 +70,17 @@ class DataBuilder:
             for idx, prefix in enumerate(prefixes):
                 while idx >= len(decoded):
                     try:
-                        decoded.append(self._openai_sample(prefix))
+                        decoded.append(
+                            self.base_model.sample_from_model(
+                                prefix, 
+                                self.args.dataset, 
+                                self.args.do_top_p, 
+                                self.args.top_p, 
+                                self.args.do_top_k, 
+                                self.args.top_k, 
+                                self.args.do_temperature, 
+                                self.args.temperature
+                            ))
                     except Exception as ex:
                         print(ex)
                         print('Wait 10 minutes before retry ...')

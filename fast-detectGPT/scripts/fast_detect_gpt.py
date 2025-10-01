@@ -11,7 +11,7 @@ import tqdm
 import argparse
 import json
 from data_builder import load_data
-from model import load_tokenizer, load_model
+from model import load_tokenizer, load_model, openai_models
 from metrics import get_roc_metrics, get_precision_recall_metrics
 
 def get_samples(logits, labels):
@@ -93,34 +93,83 @@ def experiment(args):
     random.seed(args.seed)
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
+    
+    is_openai_model = args.scoring_model_name in openai_models
+    
     results = []
     for idx in tqdm.tqdm(range(n_samples), desc=f"Computing {name} criterion"):
         original_text = data["original"][idx]
         sampled_text = data["sampled"][idx]
-        # original text
-        tokenized = scoring_tokenizer(original_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
-        labels = tokenized.input_ids[:, 1:]
-        with torch.no_grad():
-            logits_score = scoring_model(**tokenized).logits[:, :-1]
-            if args.sampling_model_name == args.scoring_model_name:
-                logits_ref = logits_score
-            else:
-                tokenized = sampling_tokenizer(original_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
-                assert torch.all(tokenized.input_ids[:, 1:] == labels), "Tokenizer is mismatch."
-                logits_ref = sampling_model(**tokenized).logits[:, :-1]
-            original_crit = criterion_fn(logits_ref, logits_score, labels)
-        # sampled text
-        tokenized = scoring_tokenizer(sampled_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
-        labels = tokenized.input_ids[:, 1:]
-        with torch.no_grad():
-            logits_score = scoring_model(**tokenized).logits[:, :-1]
-            if args.sampling_model_name == args.scoring_model_name:
-                logits_ref = logits_score
-            else:
-                tokenized = sampling_tokenizer(sampled_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
-                assert torch.all(tokenized.input_ids[:, 1:] == labels), "Tokenizer is mismatch."
-                logits_ref = sampling_model(**tokenized).logits[:, :-1]
-            sampled_crit = criterion_fn(logits_ref, logits_score, labels)
+        
+        if is_openai_model:
+
+            original_crit, sampled_crit = 0, 0
+            o_tokens, o_logprobs, o_top = scoring_model.score_text_with_logprobs(text=original_text)
+            s_tokens, s_logprobs, s_top = scoring_model.score_text_with_logprobs(text=sampled_text)
+
+            if name == 'likelihood':
+                # mean log prob over tokens
+                original_crit = float(np.mean(o_logprobs)) if len(o_logprobs) else float("nan")
+                sampled_crit  = float(np.mean(s_logprobs)) if len(s_logprobs) else float("nan")
+
+            elif name in ('rank', 'logrank'):
+                # approximate rank using top_k alt probabilities
+                def approx_rank(tokens, top_lists):
+                    ranks = []
+                    for tok, top in zip(tokens, top_lists):
+                        found = next((t['rank'] for t in top if t['token'] == tok), None)
+                        r = (found + 1) if found is not None else (top_k + 1)
+                        ranks.append(float(r))
+                    if not ranks:
+                        return float("nan")
+                    if name == 'rank':
+                        return -float(np.mean(ranks))
+                    else:
+                        return -float(np.mean(np.log(np.array(ranks, dtype=np.float32))))
+                original_crit = approx_rank(o_tokens, o_top)
+                sampled_crit  = approx_rank(s_tokens, s_top)
+
+            elif name == 'entropy':
+                # approximate token-level entropy using the observed top_k distribution (normalized)
+                def approx_entropy(top_lists):
+                    ents = []
+                    for top in top_lists:
+                        if not top:
+                            continue
+                        lp = np.array([t['logprob'] for t in top], dtype=np.float64)
+                        p = np.exp(lp - lp.max())
+                        p = p / p.sum() if p.sum() > 0 else p
+                        ent = -float(np.sum(p * np.log(np.clip(p, 1e-12, 1.0))))
+                        ents.append(ent)
+                    return float(np.mean(ents)) if ents else float("nan")
+                original_crit = approx_entropy(o_top)
+                sampled_crit  = approx_entropy(s_top)
+        else:
+            # original text
+            tokenized = scoring_tokenizer(original_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
+            labels = tokenized.input_ids[:, 1:]
+            with torch.no_grad():
+                logits_score = scoring_model(**tokenized).logits[:, :-1]
+                if args.sampling_model_name == args.scoring_model_name:
+                    logits_ref = logits_score
+                else:
+                    tokenized = sampling_tokenizer(original_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
+                    assert torch.all(tokenized.input_ids[:, 1:] == labels), "Tokenizer is mismatch."
+                    logits_ref = sampling_model(**tokenized).logits[:, :-1]
+                original_crit = criterion_fn(logits_ref, logits_score, labels)
+            # sampled text
+            tokenized = scoring_tokenizer(sampled_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
+            labels = tokenized.input_ids[:, 1:]
+            with torch.no_grad():
+                logits_score = scoring_model(**tokenized).logits[:, :-1]
+                if args.sampling_model_name == args.scoring_model_name:
+                    logits_ref = logits_score
+                else:
+                    tokenized = sampling_tokenizer(sampled_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
+                    assert torch.all(tokenized.input_ids[:, 1:] == labels), "Tokenizer is mismatch."
+                    logits_ref = sampling_model(**tokenized).logits[:, :-1]
+                sampled_crit = criterion_fn(logits_ref, logits_score, labels)
+        
         # result
         results.append({"original": original_text,
                         "original_crit": original_crit,

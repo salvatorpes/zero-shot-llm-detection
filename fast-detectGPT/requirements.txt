@@ -8,3 +8,7 @@ openai
 nltk
 scikit-learn
 accelerate
+scipy
+python-dotenv
+openai
+tiktoken

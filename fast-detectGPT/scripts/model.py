@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from openai_model import OpenAIModel
 import torch
 import time
 import os
@@ -16,29 +17,38 @@ def from_pretrained(cls, model_name, kwargs, cache_dir):
     return cls.from_pretrained(model_name, **kwargs, cache_dir=cache_dir, trust_remote_code=True)
 
 # predefined models
-model_fullnames = {  'gpt2': 'gpt2',
-                     'gpt2-xl': 'gpt2-xl',
-                     'opt-2.7b': 'facebook/opt-2.7b',
-                     'gpt-neo-2.7B': 'EleutherAI/gpt-neo-2.7B',
-                     'gpt-j-6B': 'EleutherAI/gpt-j-6B',
-                     'gpt-neox-20b': 'EleutherAI/gpt-neox-20b',
-                     'mgpt': 'sberbank-ai/mGPT',
-                     'pubmedgpt': 'stanford-crfm/pubmedgpt',
-                     'mt5-xl': 'google/mt5-xl',
-                     'llama-13b': 'huggyllama/llama-13b',
-                     'llama2-13b': 'TheBloke/Llama-2-13B-fp16',
-                     'bloom-7b1': 'bigscience/bloom-7b1',
-                     'opt-13b': 'facebook/opt-13b',
-                     'falcon-7b': 'tiiuae/falcon-7b',
-                     'falcon-7b-instruct': 'tiiuae/falcon-7b-instruct',
-                     'r1-8b': 'deepseek-ai/DeepSeek-R1-Distill-Llama-8B', # ours
-                     'phi-2': 'microsoft/phi-2', # ours
-                     'mistral-7b': 'mistralai/Mistral-7B-Instruct-v0.2', # ours
-                     'gpt-oss-20b': 'openai/gpt-oss-20b', # ours (but too big)
-                     }
+model_fullnames = {  
+    'gpt2': 'gpt2',
+    'gpt2-xl': 'gpt2-xl',
+    'opt-2.7b': 'facebook/opt-2.7b',
+    'gpt-neo-2.7B': 'EleutherAI/gpt-neo-2.7B',
+    'gpt-j-6B': 'EleutherAI/gpt-j-6B',
+    'gpt-neox-20b': 'EleutherAI/gpt-neox-20b',
+    'mgpt': 'sberbank-ai/mGPT',
+    'pubmedgpt': 'stanford-crfm/pubmedgpt',
+    'mt5-xl': 'google/mt5-xl',
+    'llama-13b': 'huggyllama/llama-13b',
+    'llama2-13b': 'TheBloke/Llama-2-13B-fp16',
+    'bloom-7b1': 'bigscience/bloom-7b1',
+    'opt-13b': 'facebook/opt-13b',
+    'falcon-7b': 'tiiuae/falcon-7b',
+    'falcon-7b-instruct': 'tiiuae/falcon-7b-instruct',
+    'r1-8b': 'deepseek-ai/DeepSeek-R1-Distill-Llama-8B', # ours
+    'phi-2': 'microsoft/phi-2', # ours
+    'mistral-7b': 'mistralai/Mistral-7B-Instruct-v0.2', # ours
+    'gpt-oss-20b': 'openai/gpt-oss-20b', # ours (but too big)
+    'qwen3-4b': 'Qwen/Qwen3-4B-Instruct-2507',
+    'phi-2': 'microsoft/phi-2',
+    # OpenAI models
+    'gpt-3.5-turbo': 'gpt-3.5-turbo',
+    'gpt-4': 'gpt-4',
+    'gpt-4o': 'gpt-4o',
+    'gpt-4o-mini': 'gpt-4o-mini',
+}
 float16_models = ['gpt-neo-2.7B', 'gpt-j-6B', 'gpt-neox-20b', 'llama-13b', 'llama2-13b', 'bloom-7b1', 'opt-13b',
                   'falcon-7b', 'falcon-7b-instruct']
 bf16_models = ['nvidia-9b']
+openai_models = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4o', 'gpt-4o-mini']
 
 def get_model_fullname(model_name):
     return model_fullnames[model_name] if model_name in model_fullnames else model_name
@@ -46,6 +56,11 @@ def get_model_fullname(model_name):
 def load_model(model_name, device, cache_dir):
     model_fullname = get_model_fullname(model_name)
     print(f'Loading model {model_fullname}...')
+
+    if model_name in openai_models:
+        model = OpenAIModel(model_fullname)
+        return model
+    
     model_kwargs = {}
     if model_name in float16_models:
         model_kwargs.update(dict(torch_dtype=torch.float16))
@@ -62,6 +77,12 @@ def load_model(model_name, device, cache_dir):
 
 def load_tokenizer(model_name, cache_dir):
     model_fullname = get_model_fullname(model_name)
+    print(f'Loading tokenizer from model {model_fullname}...')
+    
+    if model_name in openai_models:
+        model = OpenAIModel(model_fullname)
+        return model.tokenizer
+    
     optional_tok_kwargs = {}
     if "facebook/opt-" in model_fullname:
         print("Using non-fast tokenizer for OPT")
