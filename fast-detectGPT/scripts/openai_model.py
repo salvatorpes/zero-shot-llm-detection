@@ -155,12 +155,14 @@ class OpenAIModel:
         roles = {
             'xsum': 'You are a News writer.',
             'writing': 'You are a Fiction writer.',
-            'pubmed': 'You are a Technical writer.'
+            'pubmed': 'You are a Technical writer.',
+            'hc3': 'You are a Technical writer.'
         }
         prompts = {
             'xsum': 'Please write an article with about 150 words starting exactly with:',
             'writing': 'Please write an article with about 150 words starting exactly with:',
-            'pubmed': 'Please answer the question in about 50 words.'
+            'pubmed': 'Please answer the question in about 50 words.',
+            'hc3': 'Please write a continuation of the following text in about 150 words starting exactly with:'
         }
         messages = [
             {'role': 'system', 'content': roles[dataset]},
@@ -239,7 +241,7 @@ class OpenAIModel:
             logprobs_list.append({
                 "token": logprob.token,
                 "logprob": logprob.logprob,
-                "top": [{"token": n.token, "logprob": n.logprob, "rank": i} for i, n in enumerate(logprobs.top_logprobs)]	
+                "top": [{"token": n.token, "logprob": n.logprob, "rank": i} for i, n in enumerate(logprob.top_logprobs)]	
             })
 
         if not separate:
