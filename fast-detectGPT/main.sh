@@ -12,15 +12,15 @@ export TOKENIZERS_PARALLELISM=false
 # prepare folders
 exp_path=exp_main
 data_path=$exp_path/data
-res_path=$exp_path/results-new
+res_path=$exp_path/results-blackbox
 mkdir -p $exp_path $data_path $res_path
 
 # datasets="xsum squad writing" (ORIGINAL)
-datasets="xsum" # A BASELINE + OUR DATASET
+datasets="xsum hc3" # A BASELINE + OUR DATASET
 # source_models="gpt2-xl opt-2.7b gpt-neo-2.7B gpt-j-6B gpt-neox-20b" (ORIGINAL)
 # source_models="gpt-oss-20b" (DOESN"T WORK -> TOO LARGE)
 # source_models="nvidia-9b" # (WORKS WITH XSUM BUT NOT HC3)
-source_models="gpt-neo-2.7B" # OUR FUNCTIONING MODELS
+source_models="r1-8b phi-2 mistral-7b" # OUR FUNCTIONING MODELS
 
 # preparing dataset
 for D in $datasets; do
@@ -33,22 +33,22 @@ done
 # White-box Setting
 echo `date`, Evaluate models in the white-box setting:
 
-# Evaluate Fast-DetectGPT, fast baselines and DetectGPT (but doesn't work)
-for D in $datasets; do
-  for M in $source_models; do
-    echo `date`, Evaluating Fast-DetectGPT on ${D}_${M} ...
-    python scripts/fast_detect_gpt.py --sampling_model_name $M --scoring_model_name $M --dataset $D \
-                          --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}
+# # Evaluate Fast-DetectGPT, fast baselines and DetectGPT (but doesn't work)
+# for D in $datasets; do
+#   for M in $source_models; do
+#     echo `date`, Evaluating Fast-DetectGPT on ${D}_${M} ...
+#     python scripts/fast_detect_gpt.py --sampling_model_name $M --scoring_model_name $M --dataset $D \
+#                           --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}
 
-    echo `date`, Evaluating baseline methods on ${D}_${M} ...
-    python scripts/baselines.py --scoring_model_name $M --dataset $D \
-                          --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}
+#     echo `date`, Evaluating baseline methods on ${D}_${M} ...
+#     python scripts/baselines.py --scoring_model_name $M --dataset $D \
+#                           --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}
 
-    echo `date`, Evaluating DetectGPT on ${D}_${M} ...
-    python scripts/detect_gpt.py --mask_filling_model_name ${M} --scoring_model_name ${M} --n_perturbations 100 --dataset $D \
-                          --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}_slow
-  done
-done
+#     echo `date`, Evaluating DetectGPT on ${D}_${M} ...
+#     python scripts/detect_gpt.py --mask_filling_model_name ${M} --scoring_model_name ${M} --n_perturbations 100 --dataset $D \
+#                           --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}_slow
+#   done
+# done
 
 # evaluate DNA-GPT
 # for D in $datasets; do
@@ -73,21 +73,21 @@ done
 # done
 
 
-# # Black-box Setting
-# echo `date`, Evaluate models in the black-box setting:
-# scoring_models="r1-8b phi-2 mistral-7b"
+# Black-box Setting
+echo `date`, Evaluate models in the black-box setting:
+scoring_models="mistral-7b"
 
-# # evaluate Fast-DetectGPT
-# for D in $datasets; do
-#   for M in $source_models; do
-#     M1=gpt-neo-2.7B # sampling model
-#     for M2 in $scoring_models; do
-#       echo `date`, Evaluating Fast-DetectGPT on ${D}_${M}.${M1}_${M2} ...
-#       python scripts/fast_detect_gpt.py --sampling_model_name ${M1} --scoring_model_name ${M2} --dataset $D \
-#                           --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}.${M1}_${M2}
-#     done
-#   done
-# done
+# evaluate Fast-DetectGPT
+for D in $datasets; do
+  for M in $source_models; do
+    M1="phi-2" # sampling model
+    for M2 in $scoring_models; do
+      echo `date`, Evaluating Fast-DetectGPT on ${D}_${M}.${M1}_${M2} ...
+      python scripts/fast_detect_gpt.py --sampling_model_name ${M1} --scoring_model_name ${M2} --dataset $D \
+                          --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}.${M1}_${M2}
+    done
+  done
+done
 
 # evaluate DetectGPT and its improvement DetectLLM
 # for D in $datasets; do

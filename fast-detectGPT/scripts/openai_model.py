@@ -283,7 +283,7 @@ class OpenAIModel:
         for rank,logprob in enumerate(logprobs.content):
             logprobs_list.append({
                 "token": logprob.token,
-                "logprob": logprob.logprob
+                "logprob": logprob.logprob,
                 "rank": rank	
             })
         if return_separate_lists:
