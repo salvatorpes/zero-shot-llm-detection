@@ -12,17 +12,20 @@ import argparse
 import os
 import json
 import custom_datasets
+from pathlib import Path
 from openai import OpenAI
 from dotenv import load_dotenv
-from openai_model import OpenAIModel
 from model import load_tokenizer, load_model, openai_models
 
-load_dotenv()
+load_dotenv(dotenv_path=Path(__file__).with_name('.env'))
 OPENAI_ORG_ID = os.getenv("OPENAI_ORG_ID")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL")
 
 def save_data(output_file, args, data):
+
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    
     # write args to file
     args_file = f"{output_file}.args.json"
     with open(args_file, "w") as fout:
@@ -51,40 +54,51 @@ class DataBuilder:
         self.base_model = load_model(args.base_model_name, args.device, args.cache_dir)
 
     # sample from base_model using ****only**** the first 30 tokens in each example as context
-    def _sample_from_model(self, texts, min_words=55, prompt_tokens=30):
+    def _sample_from_model(self, texts, min_words=55, prompt_tokens=30, is_openai_model=False):
+
         # encode each text as a list of token ids
         if self.args.dataset == 'pubmed':
             texts = [t[:t.index(custom_datasets.SEPARATOR)] for t in texts]
-            all_encoded = self.base_tokenizer(texts, return_tensors="pt", padding=True, return_token_type_ids=False).to(self.args.device)
+            if is_openai_model:
+                all_encoded = self.base_model.encode_batch(texts)
+                all_encoded = [encoded_text[:prompt_tokens] for encoded_text in all_encoded]
+            else:
+                all_encoded = self.base_tokenizer(texts, return_tensors="pt", padding=True, return_token_type_ids=False).to(self.args.device)
         else:
-            all_encoded = self.base_tokenizer(texts, return_tensors="pt", padding=True, return_token_type_ids=False).to(self.args.device)
-            all_encoded = {key: value[:, :prompt_tokens] for key, value in all_encoded.items()}
+            if is_openai_model:
+                all_encoded = self.base_model.encode_batch(texts)
+                all_encoded = [encoded_text[:prompt_tokens] for encoded_text in all_encoded]
+            else:
+                all_encoded = self.base_tokenizer(texts, return_tensors="pt", padding=True, return_token_type_ids=False).to(self.args.device)
+                all_encoded = {key: value[:, :prompt_tokens] for key, value in all_encoded.items()}
 
-        is_openai_model = self.args.base_model_name in openai_models
+        logprobs = []
 
         if is_openai_model:
-            # decode the prefixes back into text
-            prefixes = self.base_tokenizer.batch_decode(all_encoded['input_ids'], skip_special_tokens=True)
+            # decode the all_decoded back into text
+            all_decoded = [self.base_model.decode(encoded_text) for encoded_text in all_encoded]
 
             decoded = []
-            for idx, prefix in enumerate(prefixes):
+            
+            for idx, prefix in enumerate(all_decoded):
                 while idx >= len(decoded):
                     try:
-                        decoded.append(
-                            self.base_model.sample_from_model(
-                                prefix, 
-                                self.args.dataset, 
-                                self.args.do_top_p, 
-                                self.args.top_p, 
-                                self.args.do_top_k, 
-                                self.args.top_k, 
-                                self.args.do_temperature, 
-                                self.args.temperature
-                            ))
+                        sampled_text, sampled_logprobs = self.base_model.sample_from_openai(
+                            prefix, 
+                            self.args.dataset, 
+                            self.args.do_top_p, 
+                            self.args.top_p, 
+                            self.args.do_top_k, 
+                            self.args.top_k, 
+                            self.args.do_temperature, 
+                            self.args.temperature
+                        )
+                        decoded.append(sampled_text)
+                        logprobs.append(sampled_logprobs)
                     except Exception as ex:
                         print(ex)
-                        print('Wait 10 minutes before retry ...')
-                        time.sleep(600)
+                        print('Wait 5 seconds before retry ...')
+                        time.sleep(5)
 
         else:
             self.base_model.eval()
@@ -98,8 +112,8 @@ class DataBuilder:
                 if tries != 0:
                     print()
                     print(f"min words: {m}, needed {min_words}, regenerating (try {tries})")
-                    prefixes = self.base_tokenizer.batch_decode(all_encoded['input_ids'], skip_special_tokens=True)
-                    for prefix, x in zip(prefixes, decoded):
+                    all_decoded = self.base_tokenizer.batch_decode(all_encoded['input_ids'], skip_special_tokens=True)
+                    for prefix, x in zip(all_decoded, decoded):
                         if len(x.split()) == m:
                             print(prefix, '=>', x)
 
@@ -118,9 +132,9 @@ class DataBuilder:
                 m = min(len(x.split()) for x in decoded)
                 tries += 1
 
-        return decoded
+        return decoded, logprobs
 
-    def generate_samples(self, raw_data, batch_size):
+    def generate_samples(self, raw_data, batch_size, is_openai_model=False):
         # trim to shorter length
         def _trim_to_shorter_length(texta, textb):
             # truncate to shorter of o and s
@@ -142,23 +156,37 @@ class DataBuilder:
         data = {
             "original": [],
             "sampled": [],
+            "sampled_logprobs": [],
         }
 
         for batch in range(len(raw_data) // batch_size):
             print('Generating samples for batch', batch, 'of', len(raw_data) // batch_size)
             original_text = raw_data[batch * batch_size:(batch + 1) * batch_size]
-            sampled_text = self._sample_from_model(original_text, min_words=30 if self.args.dataset in ['pubmed'] else 55)
+            sampled_text, sampled_logprobs = self._sample_from_model(original_text, min_words=30 if self.args.dataset in ['pubmed'] else 55, is_openai_model=is_openai_model)
 
-            for o, s in zip(original_text, sampled_text):
-                if self.args.dataset == 'pubmed':
-                    s = _truncate_to_substring(s, 'Question:', 2)
-                    o = o.replace(custom_datasets.SEPARATOR, ' ')
+            if is_openai_model:
+                for o, s, l in zip(original_text, sampled_text, sampled_logprobs):
+                    if self.args.dataset == 'pubmed':
+                        s = _truncate_to_substring(s, 'Question:', 2)
+                        o = o.replace(custom_datasets.SEPARATOR, ' ')
 
-                o, s = _trim_to_shorter_length(o, s)
+                    o, s = _trim_to_shorter_length(o, s)
 
-                # add to the data
-                data["original"].append(o)
-                data["sampled"].append(s)
+                    # add to the data
+                    data["original"].append(o)
+                    data["sampled"].append(s)
+                    data["sampled_logprobs"].append(l)
+            else:
+                for o, s in zip(original_text, sampled_text):
+                    if self.args.dataset == 'pubmed':
+                        s = _truncate_to_substring(s, 'Question:', 2)
+                        o = o.replace(custom_datasets.SEPARATOR, ' ')
+
+                    o, s = _trim_to_shorter_length(o, s)
+
+                    # add to the data
+                    data["original"].append(o)
+                    data["sampled"].append(s)
 
         return data
 
@@ -199,14 +227,20 @@ def generate_data(args, dataset, key):
     # keep only examples with <= 512 tokens according to base_tokenizer
     # this step has the extra effect of removing examples with low-quality/garbage content
     data_builder = DataBuilder(args)
-    tokenized_data = data_builder.base_tokenizer(data)
-    data = [x for x, y in zip(data, tokenized_data["input_ids"]) if len(y) <= 512]
+    is_openai_model = args.base_model_name in openai_models
+
+    if is_openai_model:
+        tokenized_data = data_builder.base_model.encode_batch(data)
+        data = [x for x, y in zip(data, tokenized_data) if len(y) <= 512]
+    else:
+        tokenized_data = data_builder.base_tokenizer(data)
+        data = [x for x, y in zip(data, tokenized_data["input_ids"]) if len(y) <= 512]
 
     # print stats about remaining data
     print(f"Total number of samples: {len(data)}")
     print(f"Average number of words: {np.mean([len(x.split()) for x in data])}")
 
-    return data_builder.generate_samples(data[:args.n_samples], batch_size=args.batch_size)
+    return data_builder.generate_samples(data[:args.n_samples], batch_size=args.batch_size, is_openai_model=is_openai_model)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -219,7 +253,7 @@ if __name__ == '__main__':
     parser.add_argument('--base_model_name', type=str, default="gpt2")
     parser.add_argument('--batch_size', type=int, default=50)
     parser.add_argument('--do_top_k', action='store_true')
-    parser.add_argument('--top_k', type=int, default=40)
+    parser.add_argument('--top_k', type=int, default=20)
     parser.add_argument('--do_top_p', action='store_true')
     parser.add_argument('--top_p', type=float, default=0.96)
     parser.add_argument('--do_temperature', action='store_true')

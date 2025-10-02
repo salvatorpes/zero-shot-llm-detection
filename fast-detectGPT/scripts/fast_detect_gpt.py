@@ -70,18 +70,77 @@ def get_sampling_discrepancy_analytic(logits_ref, logits_score, labels):
     discrepancy = discrepancy.mean()
     return discrepancy.item()
 
+def _approx_moments_from_tops(ref_top_list, score_top_list, eps: float = 1e-8):
+    """
+    ref_top_list: list[{'token', 'logprob', 'rank'}] for a single position (from ref model)
+    score_top_list: list[{'token', 'logprob', 'rank'}] for a single position (from scoring model)
+    Returns mean_ref, var_ref using the intersection of tokens and renormalized ref probs.
+    """
+    if not ref_top_list or not score_top_list:
+        return 0.0, eps  # avoid zero variance
+
+    ref_map = {d["token"]: float(d["logprob"]) for d in ref_top_list}
+    score_map = {d["token"]: float(d["logprob"]) for d in score_top_list}
+    keys = list(set(ref_map.keys()) & set(score_map.keys()))
+    if not keys:
+        return 0.0, eps
+
+    ref_lp = np.array([ref_map[k] for k in keys], dtype=np.float64)
+    # normalize ref to probabilities over the intersection (truncated softmax)
+    ref_p = np.exp(ref_lp - ref_lp.max())
+    s = ref_p.sum()
+    if s <= 0:
+        return 0.0, eps
+    ref_p = ref_p / s
+
+    score_lp = np.array([score_map[k] for k in keys], dtype=np.float64)
+    mean = float(np.sum(ref_p * score_lp))
+    second = float(np.sum(ref_p * np.square(score_lp)))
+    var = max(second - mean * mean, eps)
+    return mean, var
+
+def openai_discrepancy_analytic_from_logs(score_logs, ref_logs, eps: float = 1e-8) -> float:
+    """
+    score_logs/ref_logs are dicts from OpenAIModel.score_text_with_logprobs(separate=True).
+    Mirrors get_sampling_discrepancy_analytic using top-logprobs intersection.
+    """
+    # log-likelihood of the *observed* tokens under scoring model
+    token_ll = np.array(score_logs["token_logprobs"], dtype=np.float64)  # one per position
+
+    # per-position approximate moments under reference distribution
+    means, vars_ = [], []
+    for t in range(len(token_ll)):
+        ref_top = ref_logs["top_logprobs_per_token"][t] if t < len(ref_logs["top_logprobs_per_token"]) else []
+        score_top = score_logs["top_logprobs_per_token"][t] if t < len(score_logs["top_logprobs_per_token"]) else []
+        m, v = _approx_moments_from_tops(ref_top, score_top, eps=eps)
+        means.append(m)
+        vars_.append(v)
+
+    means = np.array(means, dtype=np.float64)
+    vars_ = np.array(vars_, dtype=np.float64)
+    num = float(np.sum(token_ll) - np.sum(means))
+    den = float(np.sqrt(np.sum(vars_) + eps))
+    return num / den if den > 0 else 0.0
+
+
 def experiment(args):
+
+    is_openai_model = args.scoring_model_name in openai_models
+
     # load model
     scoring_tokenizer = load_tokenizer(args.scoring_model_name, args.cache_dir)
     scoring_model = load_model(args.scoring_model_name, args.device, args.cache_dir)
     scoring_model.eval()
+
     if args.sampling_model_name != args.scoring_model_name:
         sampling_tokenizer = load_tokenizer(args.sampling_model_name, args.cache_dir)
         sampling_model = load_model(args.sampling_model_name, args.device, args.cache_dir)
         sampling_model.eval()
+            
     # load data
     data = load_data(args.dataset_file)
     n_samples = len(data["sampled"])
+    
     # evaluate criterion
     if args.discrepancy_analytic:
         name = "sampling_discrepancy_analytic"
@@ -94,56 +153,27 @@ def experiment(args):
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
     
-    is_openai_model = args.scoring_model_name in openai_models
-    
     results = []
     for idx in tqdm.tqdm(range(n_samples), desc=f"Computing {name} criterion"):
         original_text = data["original"][idx]
         sampled_text = data["sampled"][idx]
         
         if is_openai_model:
+            top_k, max_length = 20, 300
 
-            original_crit, sampled_crit = 0, 0
-            o_tokens, o_logprobs, o_top = scoring_model.score_text_with_logprobs(text=original_text)
-            s_tokens, s_logprobs, s_top = scoring_model.score_text_with_logprobs(text=sampled_text)
+            sampled_score_logs = data["sampled_logprobs"][idx]
+            original_score_logs = scoring_model.score_text_with_logprobs(text=original_text, top_k=top_k, max_length=300)
 
-            if name == 'likelihood':
-                # mean log prob over tokens
-                original_crit = float(np.mean(o_logprobs)) if len(o_logprobs) else float("nan")
-                sampled_crit  = float(np.mean(s_logprobs)) if len(s_logprobs) else float("nan")
+            if args.sampling_model_name == args.scoring_model_name:
+                original_ref_logs = original_score_logs
+                sampled_ref_logs = sampled_score_logs
+            else:
+                original_ref_logs = sampling_model.score_text_with_logprobs(text=original_text, top_k=top_k, max_length=300)
+                sampled_ref_logs = sampling_model.score_text_with_logprobs(text=sampled_text, top_k=top_k, max_length=300)
 
-            elif name in ('rank', 'logrank'):
-                # approximate rank using top_k alt probabilities
-                def approx_rank(tokens, top_lists):
-                    ranks = []
-                    for tok, top in zip(tokens, top_lists):
-                        found = next((t['rank'] for t in top if t['token'] == tok), None)
-                        r = (found + 1) if found is not None else (top_k + 1)
-                        ranks.append(float(r))
-                    if not ranks:
-                        return float("nan")
-                    if name == 'rank':
-                        return -float(np.mean(ranks))
-                    else:
-                        return -float(np.mean(np.log(np.array(ranks, dtype=np.float32))))
-                original_crit = approx_rank(o_tokens, o_top)
-                sampled_crit  = approx_rank(s_tokens, s_top)
+            original_crit = openai_discrepancy_analytic_from_logs(original_score_logs, original_ref_logs, eps=1e-8)
+            sampled_crit = openai_discrepancy_analytic_from_logs(sampled_score_logs, sampled_ref_logs, eps=1e-8)
 
-            elif name == 'entropy':
-                # approximate token-level entropy using the observed top_k distribution (normalized)
-                def approx_entropy(top_lists):
-                    ents = []
-                    for top in top_lists:
-                        if not top:
-                            continue
-                        lp = np.array([t['logprob'] for t in top], dtype=np.float64)
-                        p = np.exp(lp - lp.max())
-                        p = p / p.sum() if p.sum() > 0 else p
-                        ent = -float(np.sum(p * np.log(np.clip(p, 1e-12, 1.0))))
-                        ents.append(ent)
-                    return float(np.mean(ents)) if ents else float("nan")
-                original_crit = approx_entropy(o_top)
-                sampled_crit  = approx_entropy(s_top)
         else:
             # original text
             tokenized = scoring_tokenizer(original_text, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.device)
@@ -171,27 +201,43 @@ def experiment(args):
                 sampled_crit = criterion_fn(logits_ref, logits_score, labels)
         
         # result
-        results.append({"original": original_text,
-                        "original_crit": original_crit,
-                        "sampled": sampled_text,
-                        "sampled_crit": sampled_crit})
+        results.append({
+            "original": original_text,
+            "original_crit": original_crit,
+            "sampled": sampled_text,
+            "sampled_crit": sampled_crit
+        })
 
     # compute prediction scores for real/sampled passages
-    predictions = {'real': [x["original_crit"] for x in results],
-                   'samples': [x["sampled_crit"] for x in results]}
+    predictions = {
+        'real': [x["original_crit"] for x in results],
+        'samples': [x["sampled_crit"] for x in results]
+    }
     print(f"Real mean/std: {np.mean(predictions['real']):.2f}/{np.std(predictions['real']):.2f}, Samples mean/std: {np.mean(predictions['samples']):.2f}/{np.std(predictions['samples']):.2f}")
+    
     fpr, tpr, roc_auc = get_roc_metrics(predictions['real'], predictions['samples'])
     p, r, pr_auc = get_precision_recall_metrics(predictions['real'], predictions['samples'])
     print(f"Criterion {name}_threshold ROC AUC: {roc_auc:.4f}, PR AUC: {pr_auc:.4f}")
+    
     # results
     results_file = f'{args.output_file}.{name}.json'
-    results = { 'name': f'{name}_threshold',
-                'info': {'n_samples': n_samples},
-                'predictions': predictions,
-                'raw_results': results,
-                'metrics': {'roc_auc': roc_auc, 'fpr': fpr, 'tpr': tpr},
-                'pr_metrics': {'pr_auc': pr_auc, 'precision': p, 'recall': r},
-                'loss': 1 - pr_auc}
+    results = { 
+        'name': f'{name}_threshold',
+        'info': {'n_samples': n_samples},
+        'predictions': predictions,
+        'raw_results': results,
+        'metrics': {
+            'roc_auc': roc_auc, 
+            'fpr': fpr, 
+            'tpr': tpr
+        },
+        'pr_metrics': {
+            'pr_auc': pr_auc, 
+            'precision': p, 
+            'recall': r
+        },
+        'loss': 1 - pr_auc
+    }
     with open(results_file, 'w') as fout:
         json.dump(results, fout)
         print(f'Results written into {results_file}')

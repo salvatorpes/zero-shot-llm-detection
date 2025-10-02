@@ -4,9 +4,10 @@ from openai import OpenAI
 import tiktoken
 import time
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=Path(__file__).with_name('.env'))
 OPENAI_ORG_ID = os.getenv("OPENAI_ORG_ID")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL")
@@ -105,74 +106,21 @@ class OpenAIModel:
             client_kwargs['organization'] = self.org_id
             
         self.client = OpenAI(**client_kwargs)
-        
-        if 'gpt-4' in model:
-            self.tokenizer = tiktoken.encoding_for_model("gpt-4")
-        elif 'gpt-3.5' in model:
-            self.tokenizer = tiktoken.encoding_for_model("gpt-3.5-turbo")
-        else:
+
+        try:
+            if self.model.startswith('gpt-4o'):
+                self.tokenizer = tiktoken.get_encoding("gpt-4o")
+            elif self.model.startswith('gpt-5'):
+                self.tokenizer = tiktoken.get_encoding("gpt-5")
+            else:
+                self.tokenizer = tiktoken.get_encoding("cl100k_base")
+        except:
             self.tokenizer = tiktoken.get_encoding("cl100k_base")
 
         self.models_data = GPT_MODEL_DATA
         self.safeguard_model = 'gpt-4o-mini'
     
-    def generate_message(
-        self, 
-        input_ids=None, 
-        texts=None,
-        max_length=250, 
-        do_sample=True,
-        temperature=1.0,
-        top_p=1.0,
-        top_k=0.0
-    ):
-
-        if texts is None and input_ids is not None:
-            if torch.is_tensor(input_ids):
-                input_ids = input_ids.cpu().numpy()
-            texts = [self.tokenizer.decode(ids) for ids in input_ids]
-        
-        if texts is None:
-            raise ValueError("Either 'texts' or 'input_ids' must be provided")
-        
-        generated_texts = []
-        total_input_tokens, total_output_tokens = 0, 0
-        logprobs = None
-        
-        for text in texts:
-
-            messages = [{
-                    "role": "user", 
-                    "content": f"Continue the following text: {text}"
-                }]
-            options = self.models_data.get(self.model, self.models_data.get(self.safeguard_model, {})).get('model_options', {})
-            options["temperature"] = temperature
-            if do_sample and top_p < 1.0:
-                options["top_p"] = top_p
-            if do_sample and top_k > 0.0:
-                if top_k > 20:
-                    raise ValueError("top_k must be less than or equal to 20")
-                options["top_logprobs"] = int(top_k)
-
-            try:
-                response = self.client.chat.completions.create(
-                    model=self.model,
-                    messages=messages,
-                    max_completion_tokens=max_length,
-                    **options
-                )
-                generated_text = response.choices[0].message.content.strip()
-                logprobs = self.process_logprobs(response.choices[0].logprobs)
-                total_input_tokens += response.usage.prompt_tokens
-                total_output_tokens += response.usage.completion_tokens
-            except Exception as e:
-                raise Exception(f"API error occurred: {e}")
-             
-            generated_texts.append(generated_text)
-        
-        return generated_text, logprobs, total_input_tokens, total_output_tokens
-    
-    def sample_from_model(
+    def sample_from_openai(
         self, 
         prefix, 
         dataset, 
@@ -185,12 +133,16 @@ class OpenAIModel:
     ):
 
         def _drop_last_word(text):
-            return ' '.join(text.split(' ')[:-1])
+            parts = text.split(' ')
+            return ' '.join(parts[:-1]) if len(parts) > 1 else text
 
         if dataset != 'pubmed':
             prefix = _drop_last_word(prefix)
 
+        total_input_tokens, total_output_tokens = 0, 0
+
         options = self.models_data.get(self.model, self.models_data.get(self.safeguard_model, {})).get('model_options', {})
+        options["max_completion_tokens"] = 300
         if do_temperature:
             options["temperature"] = temperature
         if do_top_p and top_p < 1.0:
@@ -219,11 +171,12 @@ class OpenAIModel:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
-                max_completion_tokens=300,
                 **options
             )
             generated_text = response.choices[0].message.content.strip()
-            logprobs = self.process_logprobs(response.choices[0].logprobs)
+            total_input_tokens += response.usage.prompt_tokens
+            total_output_tokens += response.usage.completion_tokens
+            logprobs = self.process_logprobs(response.choices[0].logprobs, separate=True)
         except Exception as e:
             raise Exception(f"API error occurred: {e}")
 
@@ -236,9 +189,6 @@ class OpenAIModel:
         max_length=300
     ):
 
-        target_ids = self.encode(text)
-        max_completion_tokens = min(len(target_ids), max_length)
-
         system_prompt = (
             "Repeat EXACTLY the following text, character by character, with no changes. "
             "Do not add quotes or commentary. Output only the text."
@@ -248,26 +198,30 @@ class OpenAIModel:
             {"role": "user", "content": text}
         ]
 
+        total_input_tokens, total_output_tokens = 0, 0
+
         options = self.models_data.get(self.model, self.models_data.get(self.safeguard_model, {})).get('model_options', {})
         options.update({
             "temperature": 0.0,
             "logprobs": True,
             "top_logprobs": int(top_k),
+            "max_completion_tokens": int(max_length),
         })
 
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
-                max_completion_tokens=max_completion_tokens,
                 **options
             )
             generated_text = response.choices[0].message.content.strip()
-            tokens, token_logprobs, top_logprobs_per_token = self.process_logprobs(response.choices[0].logprobs, return_separate_lists=True)
+            total_input_tokens += response.usage.prompt_tokens
+            total_output_tokens += response.usage.completion_tokens
+            logprobs = self.process_logprobs(response.choices[0].logprobs, separate=True)
         except Exception as e:
             raise Exception(f"API error during scoring: {e}")
 
-        return tokens, token_logprobs, top_logprobs_per_token
+        return logprobs
 
     def cost_calculator(self, input_tokens=0, output_tokens=0):
         try:
@@ -276,23 +230,25 @@ class OpenAIModel:
         except Exception as e:
             raise Exception(f"Failed to calculate the messages cost: {e}.")
     
-    def process_logprobs(self, logprobs, return_separate_lists=False):
+    def process_logprobs(self, logprobs, separate=False):
         logprobs_list = []
-        if not logprobs:
-            return logprobs_list
-        for rank,logprob in enumerate(logprobs.content):
+        if not logprobs or not getattr(logprobs, "content", None):
+            return [] if not separate else {"tokens": [], "token_logprobs": [], "top_logprobs_per_token": []}
+
+        for logprob in logprobs.content:
             logprobs_list.append({
                 "token": logprob.token,
                 "logprob": logprob.logprob,
-                "rank": rank	
+                "top": [{"token": n.token, "logprob": n.logprob, "rank": i} for i, n in enumerate(logprobs.top_logprobs)]	
             })
-        if return_separate_lists:
-            tokens = [i["token"] for i in logprobs_list]
-            token_logprobs = [i["logprob"] for i in logprobs_list]
-            top_logprobs_per_token = [i["rank"] for i in logprobs_list]
-            return tokens, token_logprobs, top_logprobs_per_token
-        else:
+
+        if not separate:
             return logprobs_list
+        return {
+            "tokens": [i["token"] for i in logprobs_list],
+            "token_logprobs": [i["logprob"] for i in logprobs_list],
+            "top_logprobs_per_token": [i["top"] for i in logprobs_list]
+        }        
     
     def eval(self):
         return self
@@ -300,17 +256,8 @@ class OpenAIModel:
     def encode(self, text):
         return self.tokenizer.encode(text)
 
-    def decode(self, ids, skip_special_tokens=True):
-        return self.tokenizer.decode(ids, skip_special_tokens=skip_special_tokens)
-    
-    def batch_decode(self, sequences, skip_special_tokens=True, **kwargs):
-        if torch.is_tensor(sequences):
-            sequences = sequences.cpu().numpy().tolist()
-        
-        results = []
-        for seq in sequences:
-            if skip_special_tokens:
-                seq = [token for token in seq if token != self.pad_token_id]
-            results.append(self.decode(seq, skip_special_tokens=skip_special_tokens))
-        
-        return results
+    def encode_batch(self, texts):
+        return self.tokenizer.encode_batch(texts)
+
+    def decode(self, ids):
+        return self.tokenizer.decode(ids)

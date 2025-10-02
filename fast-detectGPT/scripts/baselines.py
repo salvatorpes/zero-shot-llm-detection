@@ -66,6 +66,38 @@ def get_entropy(logits, labels):
     entropy = -entropy.sum(-1)
     return entropy.mean().item()
 
+def _approx_rank_from_tops(tokens, tops, use_log=False, default_top_k=20):
+    ranks = []
+    for tok, top in zip(tokens, tops):
+        if not top:
+            continue
+        # top is a list of dicts: {"token", "logprob", "rank"}
+        found_rank = next((t["rank"] for t in top if t["token"] == tok), None)
+        k = len(top) if len(top) > 0 else default_top_k
+        r = (found_rank + 1) if found_rank is not None else (k + 1)
+        ranks.append(float(r))
+    if not ranks:
+        return float("nan")
+    if use_log:
+        return -float(np.mean(np.log(np.array(ranks, dtype=np.float64))))
+    return -float(np.mean(ranks))
+
+
+def _approx_entropy_from_tops(tops):
+    ents = []
+    for top in tops:
+        if not top:
+            continue
+        lp = np.array([t["logprob"] for t in top], dtype=np.float64)
+        p = np.exp(lp - lp.max())
+        s = p.sum()
+        if s <= 0:
+            continue
+        p = p / s
+        ent = -float(np.sum(p * np.log(np.clip(p, 1e-12, 1.0))))
+        ents.append(ent)
+    return float(np.mean(ents)) if ents else float("nan")
+
 
 def experiment(args):
     
@@ -93,6 +125,7 @@ def experiment(args):
         eval_results = []
         
         is_openai_model = args.scoring_model_name in openai_models
+        top_k, max_length = 20, 300
         
         for idx in tqdm.tqdm(range(n_samples), desc=f"Computing {name} criterion"):
             original_text = data["original"][idx]
@@ -100,47 +133,33 @@ def experiment(args):
             
             if is_openai_model:
 
-                original_crit, sampled_crit = 0, 0
-                o_tokens, o_logprobs, o_top = scoring_model.score_text_with_logprobs(text=original_text)
-                s_tokens, s_logprobs, s_top = scoring_model.score_text_with_logprobs(text=sampled_text)
+                sampled_score_logs = data["sampled_logprobs"][idx]
+                original_score_logs = scoring_model.score_text_with_logprobs(text=original_text, top_k=top_k, max_length=300)
 
                 if name == 'likelihood':
-                    # mean log prob over tokens
-                    original_crit = float(np.mean(o_logprobs)) if len(o_logprobs) else float("nan")
-                    sampled_crit  = float(np.mean(s_logprobs)) if len(s_logprobs) else float("nan")
+                    o_ll = original_score_logs.get("token_logprobs", [])
+                    s_ll = sampled_score_logs.get("token_logprobs", [])
+                    original_crit = float(np.mean(o_ll)) if len(o_ll) else float("nan")
+                    sampled_crit = float(np.mean(s_ll)) if len(s_ll) else float("nan")
 
                 elif name in ('rank', 'logrank'):
-                    # approximate rank using top_k alt probabilities
-                    def approx_rank(tokens, top_lists):
-                        ranks = []
-                        for tok, top in zip(tokens, top_lists):
-                            found = next((t['rank'] for t in top if t['token'] == tok), None)
-                            r = (found + 1) if found is not None else (top_k + 1)
-                            ranks.append(float(r))
-                        if not ranks:
-                            return float("nan")
-                        if name == 'rank':
-                            return -float(np.mean(ranks))
-                        else:
-                            return -float(np.mean(np.log(np.array(ranks, dtype=np.float32))))
-                    original_crit = approx_rank(o_tokens, o_top)
-                    sampled_crit  = approx_rank(s_tokens, s_top)
+                    use_log = (name == 'logrank')
+                    original_crit = _approx_rank_from_tops(
+                        original_score_logs.get("tokens", []),
+                        original_score_logs.get("top_logprobs_per_token", []),
+                        use_log=use_log,
+                        default_top_k=top_k
+                    )
+                    sampled_crit = _approx_rank_from_tops(
+                        sampled_score_logs.get("tokens", []),
+                        sampled_score_logs.get("top_logprobs_per_token", []),
+                        use_log=use_log,
+                        default_top_k=top_k
+                    )
 
                 elif name == 'entropy':
-                    # approximate token-level entropy using the observed top_k distribution (normalized)
-                    def approx_entropy(top_lists):
-                        ents = []
-                        for top in top_lists:
-                            if not top:
-                                continue
-                            lp = np.array([t['logprob'] for t in top], dtype=np.float64)
-                            p = np.exp(lp - lp.max())
-                            p = p / p.sum() if p.sum() > 0 else p
-                            ent = -float(np.sum(p * np.log(np.clip(p, 1e-12, 1.0))))
-                            ents.append(ent)
-                        return float(np.mean(ents)) if ents else float("nan")
-                    original_crit = approx_entropy(o_top)
-                    sampled_crit  = approx_entropy(s_top)
+                    original_crit = _approx_entropy_from_tops(original_score_logs.get("top_logprobs_per_token", []))
+                    sampled_crit = _approx_entropy_from_tops(sampled_score_logs.get("top_logprobs_per_token", []))
 
             else:
                 # original text
