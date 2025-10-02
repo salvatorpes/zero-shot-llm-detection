@@ -12,41 +12,51 @@ export TOKENIZERS_PARALLELISM=false
 # prepare folders
 exp_path=exp_main
 data_path=$exp_path/data
-res_path=$exp_path/results-blackbox
+res_path=$exp_path/results
 mkdir -p $exp_path $data_path $res_path
 
 # datasets="xsum squad writing" (ORIGINAL)
-datasets="xsum " # A BASELINE + OUR DATASET
-# source_models="gpt2-xl opt-2.7b gpt-neo-2.7B gpt-j-6B gpt-neox-20b" (ORIGINAL)
-# source_models="gpt-oss-20b" (DOESN"T WORK -> TOO LARGE)
-# source_models="nvidia-9b" # (WORKS WITH XSUM BUT NOT HC3)
-source_models="gpt2" # OUR FUNCTIONING MODELS
+# Add parameter arrays
+datasets="xsum"
+source_models="gpt2"
+mid_k_num_positions_values="1 5 10 20 30 50 60 70 80 90 100 150"    # Different number of positions to sample
+mid_k_limit_values="2"            # Different vocabulary limits
 
 # preparing dataset
 for D in $datasets; do
   for M in $source_models; do
-    echo `date`, Preparing dataset ${D}_${M} ...
-    python scripts/data_builder.py --dataset $D --n_samples 500 --base_model_name $M --output_file $data_path/${D}_${M}_default
+    for num_pos in $mid_k_num_positions_values; do
+      for limit in $mid_k_limit_values; do
+        echo `date`, Preparing dataset ${D}_${M}_pos${num_pos}_limit${limit} ...
+        python scripts/data_builder.py --dataset $D --n_samples 500 --base_model_name $M \
+                                       --output_file $data_path/${D}_${M}_pos${num_pos}_limit${limit} \
+                                       --do_mid_k --mid_k_num_positions $num_pos --mid_k_limit $limit --mid_k_start_pos 5
+      done
+    done
   done
 done
 
 # White-box Setting
-echo `date`, Evaluate models in the white-box setting:
+echo `date`, Evaluate models in the white-box setting :
 
-# Evaluate Fast-DetectGPT, fast baselines and DetectGPT (but doesn't work)
+# Evaluate Fast-DetectGPT and fast baselines
 for D in $datasets; do
   for M in $source_models; do
-    echo `date`, Evaluating Fast-DetectGPT on ${D}_${M} ... default
-    python scripts/fast_detect_gpt.py --sampling_model_name $M --scoring_model_name $M --dataset $D \
-                          --dataset_file $data_path/${D}_${M}_default --output_file $res_path/${D}_${M}_default
+    for num_pos in $mid_k_num_positions_values; do
+      for limit in $mid_k_limit_values; do
+        dataset_suffix="_pos${num_pos}_limit${limit}"
+        
+        echo `date`, Evaluating Fast-DetectGPT on ${D}_${M}${dataset_suffix} ...
+        python scripts/fast_detect_gpt.py --sampling_model_name $M --scoring_model_name $M --dataset $D \
+                              --dataset_file $data_path/${D}_${M}${dataset_suffix} \
+                              --output_file $res_path/${D}_${M}${dataset_suffix}
 
-    echo `date`, Evaluating baseline methods on ${D}_${M} ...
-    python scripts/baselines.py --scoring_model_name $M --dataset $D \
-                          --dataset_file $data_path/${D}_${M}_default --output_file $res_path/${D}_${M}_default
-
-    # echo `date`, Evaluating DetectGPT on ${D}_${M} ...
-    # python scripts/detect_gpt.py --mask_filling_model_name ${M} --scoring_model_name ${M} --n_perturbations 100 --dataset $D \
-    #                       --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}_slow
+        echo `date`, Evaluating baseline methods on ${D}_${M}${dataset_suffix} ...
+        python scripts/baselines.py --scoring_model_name $M --dataset $D \
+                              --dataset_file $data_path/${D}_${M}${dataset_suffix} \
+                              --output_file $res_path/${D}_${M}${dataset_suffix}
+      done
+    done
   done
 done
 
@@ -73,14 +83,14 @@ done
 # done
 
 
-# Black-box Setting
+# # Black-box Setting
 # echo `date`, Evaluate models in the black-box setting:
-# scoring_models="mistral-7b"
+# scoring_models="nvidia-9b"
 
 # # evaluate Fast-DetectGPT
 # for D in $datasets; do
 #   for M in $source_models; do
-#     M1="phi-2" # sampling model
+#     M1=nvidia-9b # sampling model
 #     for M2 in $scoring_models; do
 #       echo `date`, Evaluating Fast-DetectGPT on ${D}_${M}.${M1}_${M2} ...
 #       python scripts/fast_detect_gpt.py --sampling_model_name ${M1} --scoring_model_name ${M2} --dataset $D \
