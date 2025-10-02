@@ -19,7 +19,7 @@ mkdir -p $exp_path $data_path $res_path
 # Add parameter arrays
 datasets="xsum"
 source_models="gpt2"
-mid_k_num_positions_values="1 5 10 20 30 50"    # Different number of positions to sample
+mid_k_num_positions_values="60 70 80 90 100 150"    # Different number of positions to sample
 mid_k_limit_values="1 3 5 10 20"            # Different vocabulary limits
 
 # preparing dataset
