@@ -40,15 +40,16 @@ model_fullnames = {
     'qwen3-4b': 'Qwen/Qwen3-4B-Instruct-2507',
     'phi-2': 'microsoft/phi-2',
     # OpenAI models
-    'gpt-3.5-turbo': 'gpt-3.5-turbo',
-    'gpt-4': 'gpt-4',
     'gpt-4o': 'gpt-4o',
     'gpt-4o-mini': 'gpt-4o-mini',
+    'gpt-5': 'gpt-5',
+    'gpt-5-mini': 'gpt-5-mini',
+    'gpt-5-nano': 'gpt-5-nano',
 }
 float16_models = ['gpt-neo-2.7B', 'gpt-j-6B', 'gpt-neox-20b', 'llama-13b', 'llama2-13b', 'bloom-7b1', 'opt-13b',
                   'falcon-7b', 'falcon-7b-instruct']
 bf16_models = ['nvidia-9b']
-openai_models = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4o', 'gpt-4o-mini']
+openai_models = ['gpt-4o', 'gpt-4o-mini', 'gpt-5', 'gpt-5-mini', 'gpt-5-nano']
 
 def get_model_fullname(model_name):
     return model_fullnames[model_name] if model_name in model_fullnames else model_name
