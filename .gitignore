@@ -2,3 +2,7 @@ cache/
 *.pyc
 *.env
 *.out
+!output_default.out
+!output_mid_k_v1.out
+!output_mid_k_v2.out
+!output_mid_k_v3.out

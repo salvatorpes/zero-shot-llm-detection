@@ -13,6 +13,7 @@ export TOKENIZERS_PARALLELISM=false
 exp_path=exp_main
 data_path=$exp_path/data
 res_path=$exp_path/results-blackbox
+res_path=$exp_path/results-blackbox
 mkdir -p $exp_path $data_path $res_path
 
 # datasets="xsum squad writing" (ORIGINAL)
@@ -26,7 +27,7 @@ source_models="r1-8b phi-2 mistral-7b" # OUR FUNCTIONING MODELS
 for D in $datasets; do
   for M in $source_models; do
     echo `date`, Preparing dataset ${D}_${M} ...
-    python scripts/data_builder.py --dataset $D --n_samples 500 --base_model_name $M --output_file $data_path/${D}_${M}
+    python scripts/data_builder.py --dataset $D --n_samples 500 --base_model_name $M --output_file $data_path/${D}_${M}_default
   done
 done
 
