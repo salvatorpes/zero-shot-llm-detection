@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu_a100
+#SBATCH --gpus=1
+#SBATCH --job-name=Perplexity
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=9
+#SBATCH --time=12:00:00
+#SBATCH --output=job_outputs/perplexity_%A.out
+
+module purge
+module load 2023
+module load CUDA/12.4.0
+module load Anaconda3/2023.07-2
+
+export HUGGINGFACE_HUB_TOKEN="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"
+
+source activate fastdetectGPT
+
+cd $HOME/DL4NLP-Group15/fast-detectGPT/
+python scripts/perplexity.py exp_main/results_test/
