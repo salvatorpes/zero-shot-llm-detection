@@ -94,7 +94,7 @@ def load_english(cache_dir):
 def load_xlsum(cache_dir, language='scottish_gaelic'):
     """
     Load XLSum dataset (multilingual summarization dataset)
-    Default language is English, but supports 44 languages
+    Default language is Scottish Gaelic, but supports 44 languages
     Available languages: amharic, arabic, azerbaijani, bengali, burmese, chinese_simplified,
     chinese_traditional, english, french, gujarati, hausa, hindi, igbo, indonesian, japanese,
     kirundi, korean, kyrgyz, marathi, nepali, oromo, pashto, persian, pidgin, portuguese,
