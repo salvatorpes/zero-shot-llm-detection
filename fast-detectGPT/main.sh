@@ -7,12 +7,12 @@
 # setup the environment
 echo `date`, Setup the environment ...
 export TOKENIZERS_PARALLELISM=false
-set -e  # exit if error
+# set -e  # exit if error
 
 # prepare folders
 exp_path=exp_main
 data_path=$exp_path/data
-res_path=$exp_path/results
+res_path=$exp_path/results-new
 mkdir -p $exp_path $data_path $res_path
 
 # datasets="xsum squad writing"
@@ -40,7 +40,7 @@ done
 # White-box Setting
 echo `date`, Evaluate models in the white-box setting:
 
-# evaluate Fast-DetectGPT and fast baselines
+# Evaluate Fast-DetectGPT and fast baselines
 for D in $datasets; do
   for M in $source_models; do
     echo `date`, Evaluating Fast-DetectGPT on ${D}_${M} ...
@@ -76,21 +76,21 @@ done
 # done
 
 
-# Black-box Setting
-echo `date`, Evaluate models in the black-box setting:
-scoring_models="gpt-neo-2.7B"
+# # Black-box Setting
+# echo `date`, Evaluate models in the black-box setting:
+# scoring_models="r1-8b phi-2 mistral-7b"
 
-# evaluate Fast-DetectGPT
-for D in $datasets; do
-  for M in $source_models; do
-    M1=gpt-j-6B  # sampling model
-    for M2 in $scoring_models; do
-      echo `date`, Evaluating Fast-DetectGPT on ${D}_${M}.${M1}_${M2} ...
-      python scripts/fast_detect_gpt.py --sampling_model_name ${M1} --scoring_model_name ${M2} --dataset $D \
-                          --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}.${M1}_${M2}
-    done
-  done
-done
+# # evaluate Fast-DetectGPT
+# for D in $datasets; do
+#   for M in $source_models; do
+#     M1=gpt-neo-2.7B # sampling model
+#     for M2 in $scoring_models; do
+#       echo `date`, Evaluating Fast-DetectGPT on ${D}_${M}.${M1}_${M2} ...
+#       python scripts/fast_detect_gpt.py --sampling_model_name ${M1} --scoring_model_name ${M2} --dataset $D \
+#                           --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}.${M1}_${M2}
+#     done
+#   done
+# done
 
 # evaluate DetectGPT and its improvement DetectLLM
 # for D in $datasets; do

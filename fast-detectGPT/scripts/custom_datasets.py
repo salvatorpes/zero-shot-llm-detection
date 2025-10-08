@@ -74,6 +74,9 @@ def load_writing(cache_dir=None):
 
     return filtered
 
+def load_hc3(cache_dir=None):
+    dataset = datasets.load_dataset("Hello-SimpleAI/HC3", "all", split="train", cache_dir=cache_dir)
+    return [entry[0] for entry in dataset["human_answers"]]
 
 def load_language(language, cache_dir):
     # load either the english or german portion of the wmt16 dataset
