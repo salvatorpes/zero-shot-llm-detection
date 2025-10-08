@@ -315,7 +315,7 @@ def generate_data(args, dataset, key):
     data = [_strip_newlines(x) for x in data]
 
     # try to keep only examples with > 250 words
-    if dataset in ['writing', 'squad', 'xsum']:
+    if dataset in ['writing', 'squad', 'xsum', 'xlsum']:
         long_data = [x for x in data if len(x.split()) > 250]
         if len(long_data) > 0:
             data = long_data
