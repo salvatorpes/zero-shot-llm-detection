@@ -16,10 +16,18 @@ res_path=$exp_path/results
 mkdir -p $exp_path $data_path $res_path
 
 # datasets="xsum squad writing"
-datasets="xsum"
+# Choose your HC3 subset(s):
+# datasets="hc3_all"          # All subsets combined
+# datasets="hc3_open_qa"      # Open domain Q&A only
+# datasets="hc3_finance"      # Finance domain only
+# datasets="hc3_medicine"     # Medicine domain only
+# datasets="hc3_reddit_eli5"  # Reddit ELI5 only
+# datasets="hc3_open_qa hc3_finance"  # Multiple specific subsets
+
+datasets="hc3_all" 
 # source_models="gpt2-xl opt-2.7b gpt-neo-2.7B gpt-j-6B gpt-neox-20b"
 # source_models="gpt-oss-20b"
-source_models="nvidia-9b"
+source_models="gpt-neo-2.7B"
 
 # preparing dataset
 for D in $datasets; do

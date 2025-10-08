@@ -141,7 +141,7 @@ class DataBuilder:
                     sampling_kwargs['top_k'] = self.args.top_k
                 elif self.args.do_temperature:
                     sampling_kwargs['temperature'] = self.args.temperature
-                min_length = 50 if self.args.dataset in ['pubmed'] else 150
+                min_length = 50 if self.args.dataset in ['pubmed'] or self.args.dataset.startswith('hc3') else 150
                 outputs = self.base_model.generate(**all_encoded, min_length=min_length, max_length=200, do_sample=True,
                                                    **sampling_kwargs, pad_token_id=self.base_tokenizer.eos_token_id,
                                                    eos_token_id=self.base_tokenizer.eos_token_id)
@@ -178,7 +178,7 @@ class DataBuilder:
         for batch in range(len(raw_data) // batch_size):
             print('Generating samples for batch', batch, 'of', len(raw_data) // batch_size)
             original_text = raw_data[batch * batch_size:(batch + 1) * batch_size]
-            sampled_text = self._sample_from_model(original_text, min_words=30 if self.args.dataset in ['pubmed'] else 55)
+            sampled_text = self._sample_from_model(original_text, min_words=30 if self.args.dataset in ['pubmed'] or self.args.dataset.startswith('hc3') else 55)
 
             for o, s in zip(original_text, sampled_text):
                 if self.args.dataset == 'pubmed':
@@ -270,7 +270,18 @@ if __name__ == '__main__':
     np.random.seed(args.seed)
 
     print(f'Loading dataset {args.dataset}...')
-    dataset_keys = {'xsum': 'document', 'squad': 'context', 'writing': 'document'}
+    dataset_keys = {
+        'xsum': 'document', 
+        'squad': 'context', 
+        'writing': 'document', 
+        'hc3': None,
+        'hc3_all': None,
+        'hc3_open_qa': None,
+        'hc3_finance': None,
+        'hc3_medicine': None,
+        'hc3_reddit_eli5': None,
+        'hc3_wiki_csai': None
+    }
     data = generate_data(args, args.dataset, dataset_keys[args.dataset] if args.dataset in dataset_keys else None)
 
     save_data(args.output_file, args, data)
