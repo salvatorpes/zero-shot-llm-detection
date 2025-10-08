@@ -5,7 +5,7 @@ import datasets
 SEPARATOR = '<<<SEP>>>'
 
 
-DATASETS = ['writing', 'english', 'german', 'pubmed', 'hc3']
+DATASETS = ['writing', 'english', 'german', 'pubmed', 'hc3', 'xlsum']
 
 def load_dataset(path, name=None, split=None, cache_dir=None):
     # use local model if it exists
@@ -89,6 +89,22 @@ def load_german(cache_dir):
 
 def load_english(cache_dir):
     return load_language('en', cache_dir)
+
+
+def load_xlsum(cache_dir, language='scottish_gaelic'):
+    """
+    Load XLSum dataset (multilingual summarization dataset)
+    Default language is English, but supports 44 languages
+    Available languages: amharic, arabic, azerbaijani, bengali, burmese, chinese_simplified,
+    chinese_traditional, english, french, gujarati, hausa, hindi, igbo, indonesian, japanese,
+    kirundi, korean, kyrgyz, marathi, nepali, oromo, pashto, persian, pidgin, portuguese,
+    punjabi, russian, scottish_gaelic, serbian_cyrillic, serbian_latin, sinhala, somali,
+    spanish, swahili, tamil, telugu, thai, tigrinya, turkish, ukrainian, urdu, uzbek, vietnamese, welsh, yoruba
+    """
+    dataset = load_dataset('csebuetnlp/xlsum', language, split='train', cache_dir=cache_dir)
+    # XLSum has 'text' (article) and 'summary' fields
+    # We'll use the full text articles
+    return dataset['text']
 
 
 def load(name, cache_dir, **kwargs):
