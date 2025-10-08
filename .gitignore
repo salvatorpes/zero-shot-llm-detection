@@ -6,3 +6,4 @@ cache/
 !output_mid_k_v1.out
 !output_mid_k_v2.out
 !output_mid_k_v3.out
+!xlsum_output.out
