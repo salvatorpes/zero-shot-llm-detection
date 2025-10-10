@@ -1,0 +1,14 @@
+{
+    "output_file": "exp_main/results-whitebox-detect/xsum_r1-8b_slow",
+    "dataset": "xsum",
+    "dataset_file": "exp_main/data/xsum_r1-8b",
+    "pct_words_masked": 0.3,
+    "mask_top_p": 1.0,
+    "span_length": 2,
+    "n_perturbations": 100,
+    "scoring_model_name": "r1-8b",
+    "mask_filling_model_name": "t5-small",
+    "seed": 0,
+    "device": "cuda",
+    "cache_dir": "../cache"
+}

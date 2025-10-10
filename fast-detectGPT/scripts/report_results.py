@@ -405,7 +405,8 @@ def report_new_models_results(args):
                 'hc3': 'HC3'}
     source_models = {'r1-8b': 'R1-8B',
                     'phi-2': 'Phi-2',
-                    'mistral-7b': 'Mistral-7B'}
+                    'mistral-7b': 'Mistral-7B', 
+                    'gpt-4o-mini': 'GPT 4o Mini'}
     methods1 = {'likelihood': 'Likelihood',
                'entropy': 'Entropy',
                'logrank': 'LogRank',
@@ -415,9 +416,16 @@ def report_new_models_results(args):
                'sampling_discrepancy': 'Fast-DetectGPT'}
 
     def _get_method_aurocs(dataset, method, filter=''):
+        if method=="sampling_discrepancy":
+            addition: str = "FD"
+        else:
+            addition: str = "BL"
         cols = []
         for model in source_models:
-            result_file = f'{args.result_path}/{dataset}_{model}{filter}.{method}.json'
+            if model == "gpt-4o-mini":
+                result_file = f'{args.result_path}-api/{dataset}_{model}_{addition}{filter}.{method}.json'
+            else:
+                result_file = f'{args.result_path}/{dataset}_{model}{filter}.{method}.json'
             if os.path.exists(result_file):
                 auroc = get_auroc(result_file)
             else:

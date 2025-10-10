@@ -9,3 +9,4 @@ pip install -r requirements.txt
 pip install -U "datasets>=2.16.0,<3" "fsspec>=2023.10.0" "pyarrow>=14,<17"
 pip install python-dotenv
 pip install huggingface_hub
+pip install tiktoken

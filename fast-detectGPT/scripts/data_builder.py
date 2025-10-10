@@ -315,8 +315,14 @@ def generate_data(args, dataset, key):
     data = [_strip_newlines(x) for x in data]
 
     # try to keep only examples with > 250 words
+    # For xlsum (especially low-resource languages), use more lenient word count
     if dataset in ['writing', 'squad', 'xsum']:
         long_data = [x for x in data if len(x.split()) > 250]
+        if len(long_data) > 0:
+            data = long_data
+    elif dataset == 'xlsum':
+        # More lenient for xlsum - just require > 100 words
+        long_data = [x for x in data if len(x.split()) > 100]
         if len(long_data) > 0:
             data = long_data
 
