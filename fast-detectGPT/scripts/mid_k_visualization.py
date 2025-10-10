@@ -278,7 +278,7 @@ def create_perplexity_line_plots(results_subdir=None, top_left_only_path=None):
             ax.plot(positions, sample_values, marker='o', linewidth=2, markersize=6,
                     color=colors[i % len(colors)], label=f'Cutoff-K {limit}')
         ax.set_ylim(min_sample - sample_margin, max_sample + sample_margin)
-        ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        ax.legend(loc='upper left', frameon=True)
 
     if top_left_only_path:
         fig, ax = plt.subplots(figsize=(10, 7))
