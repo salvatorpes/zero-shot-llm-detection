@@ -1,9 +1,81 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{16}
 \providecommand{\natexlab}[1]{#1}
 
-\bibitem[{Gusfield(1997)}]{Gusfield:97}
-Dan Gusfield. 1997.
-\newblock \emph{Algorithms on Strings, Trees and Sequences}.
-\newblock Cambridge University Press, Cambridge, UK.
+\bibitem[{Adelani et~al.(2019)Adelani, Mai, Fang, Nguyen, Yamagishi, and Echizen}]{adelani2019generatingsentimentpreservingfakeonline}
+David~Ifeoluwa Adelani, Haotian Mai, Fuming Fang, Huy~H. Nguyen, Junichi Yamagishi, and Isao Echizen. 2019.
+\newblock \href {https://arxiv.org/abs/1907.09177} {Generating sentiment-preserving fake online reviews using neural language models and their human- and machine-based detection}.
+\newblock \emph{Preprint}, arXiv:1907.09177.
+
+\bibitem[{Ahmed et~al.(2021)Ahmed, Aljabouh, Donepudi, and Choi}]{ahmed2021detectingfakenewsusing}
+Alim Al~Ayub Ahmed, Ayman Aljabouh, Praveen~Kumar Donepudi, and Myung~Suh Choi. 2021.
+\newblock \href {https://arxiv.org/abs/2102.04458} {Detecting fake news using machine learning : A systematic literature review}.
+\newblock \emph{Preprint}, arXiv:2102.04458.
+
+\bibitem[{Brown et~al.(2020)Brown, Mann, Ryder, Subbiah, Kaplan, Dhariwal, Neelakantan, Shyam, Sastry, Askell, Agarwal, Herbert-Voss, Krueger, Henighan, Child, Ramesh, Ziegler, Wu, Winter, Hesse, Chen, Sigler, Litwin, Gray, Chess, Clark, Berner, McCandlish, Radford, Sutskever, and Amodei}]{GPT3}
+Tom~B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel~M. Ziegler, Jeffrey Wu, Clemens Winter, and 12 others. 2020.
+\newblock \href {https://arxiv.org/abs/2005.14165} {Language models are few-shot learners}.
+\newblock \emph{Preprint}, arXiv:2005.14165.
+
+\bibitem[{DeepSeek-AI(2025)}]{deepseekai}
+DeepSeek-AI. 2025.
+\newblock \href {https://arxiv.org/abs/2501.12948} {Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning}.
+
+\bibitem[{Guo et~al.(2023)Guo, Zhang, Wang, Jiang, Nie, Ding, Yue, and Wu}]{HC3}
+Biyang Guo, Xin Zhang, Ziyuan Wang, Minqi Jiang, Jinran Nie, Yuxuan Ding, Jianwei Yue, and Yupeng Wu. 2023.
+\newblock \href {https://arxiv.org/abs/2301.07597} {How close is chatgpt to human experts? comparison corpus, evaluation, and detection}.
+\newblock \emph{Preprint}, arXiv:2301.07597.
+
+\bibitem[{Hasan et~al.(2021)Hasan, Bhattacharjee, Islam, Mubasshir, Li, Kang, Rahman, and Shahriyar}]{xlsum}
+Tahmid Hasan, Abhik Bhattacharjee, Md.~Saiful Islam, Kazi Mubasshir, Yuan-Fang Li, Yong-Bin Kang, M.~Sohel Rahman, and Rifat Shahriyar. 2021.
+\newblock \href {https://aclanthology.org/2021.findings-acl.413} {{XL}-sum: Large-scale multilingual abstractive summarization for 44 languages}.
+\newblock In \emph{Findings of the Association for Computational Linguistics: ACL-IJCNLP 2021}, pages 4693--4703, Online. Association for Computational Linguistics.
+
+\bibitem[{Javaheripi et~al.(2023)Javaheripi, Bubeck, Abdin, Aneja, Bubeck, Mendes, Chen, Del~Giorno, Eldan, Gopi et~al.}]{phi2}
+Mojan Javaheripi, S{\'e}bastien Bubeck, Marah Abdin, Jyoti Aneja, Sebastien Bubeck, Caio C{\'e}sar~Teodoro Mendes, Weizhu Chen, Allie Del~Giorno, Ronen Eldan, Sivakanth Gopi, and 1 others. 2023.
+\newblock Phi-2: The surprising power of small language models.
+\newblock \emph{Microsoft Research Blog}, 1(3):3.
+
+\bibitem[{Jiang et~al.(2023)Jiang, Sablayrolles, Mensch, Bamford, Chaplot, de~las Casas, Bressand, Lengyel, Lample, Saulnier, Lavaud, Lachaux, Stock, Scao, Lavril, Wang, Lacroix, and Sayed}]{mistral}
+Albert~Q. Jiang, Alexandre Sablayrolles, Arthur Mensch, Chris Bamford, Devendra~Singh Chaplot, Diego de~las Casas, Florian Bressand, Gianna Lengyel, Guillaume Lample, Lucile Saulnier, Lélio~Renard Lavaud, Marie-Anne Lachaux, Pierre Stock, Teven~Le Scao, Thibaut Lavril, Thomas Wang, Timothée Lacroix, and William~El Sayed. 2023.
+\newblock \href {https://arxiv.org/abs/2310.06825} {Mistral 7b}.
+\newblock \emph{Preprint}, arXiv:2310.06825.
+
+\bibitem[{Lee et~al.(2023)Lee, Le, Chen, and Lee}]{Lee_2023}
+Jooyoung Lee, Thai Le, Jinghui Chen, and Dongwon Lee. 2023.
+\newblock \href {https://doi.org/10.1145/3543507.3583199} {Do language models plagiarize?}
+\newblock In \emph{Proceedings of the ACM Web Conference 2023}, WWW ’23, page 3637–3647. ACM.
+
+\bibitem[{Mitchell et~al.(2023)Mitchell, Lee, Khazatsky, Manning, and Finn}]{detectgpt}
+Eric Mitchell, Yoonho Lee, Alexander Khazatsky, Christopher~D. Manning, and Chelsea Finn. 2023.
+\newblock \href {https://arxiv.org/abs/2301.11305} {Detectgpt: Zero-shot machine-generated text detection using probability curvature}.
+
+\bibitem[{Mitrović et~al.(2023)Mitrović, Andreoletti, and Ayoub}]{mitrovic2023chatgpthumandetectexplain}
+Sandra Mitrović, Davide Andreoletti, and Omran Ayoub. 2023.
+\newblock \href {https://arxiv.org/abs/2301.13852} {Chatgpt or human? detect and explain. explaining decisions of machine learning model for detecting short chatgpt-generated text}.
+\newblock \emph{Preprint}, arXiv:2301.13852.
+
+\bibitem[{Narayan et~al.(2018)Narayan, Cohen, and Lapata}]{XSum}
+Shashi Narayan, Shay~B. Cohen, and Mirella Lapata. 2018.
+\newblock \href {https://arxiv.org/abs/1808.08745} {Don't give me the details, just the summary! topic-aware convolutional neural networks for extreme summarization}.
+\newblock \emph{Preprint}, arXiv:1808.08745.
+
+\bibitem[{Radford et~al.(2019)Radford, Wu, Child, Luan, Amodei, and Sutskever}]{radford2019language}
+Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. 2019.
+\newblock Language models are unsupervised multitask learners.
+
+\bibitem[{Shahid et~al.(2022)Shahid, Li, Staples, Amin, Hakak, and Ghorbani}]{shahid2022areyouacyborg}
+Wajiha Shahid, Yiran Li, Dakota Staples, Gulshan Amin, Saqib Hakak, and Ali Ghorbani. 2022.
+\newblock \href {https://doi.org/10.1109/ACCESS.2022.3157724} {Are you a cyborg, bot or human?—a survey on detecting fake news spreaders}.
+\newblock \emph{IEEE Access}, 10:27069--27083.
+
+\bibitem[{Su et~al.(2023)Su, Zhuo, Wang, and Nakov}]{su2023detectllm}
+Jinyan Su, Terry~Yue Zhuo, Di~Wang, and Preslav Nakov. 2023.
+\newblock \href {https://openreview.net/forum?id=Dy2mbQIdMz} {Detect{LLM}: Leveraging log rank information for zero-shot detection of machine-generated text}.
+\newblock In \emph{The 2023 Conference on Empirical Methods in Natural Language Processing}.
+
+\bibitem[{Zhang et~al.(2022)Zhang, Roller, Goyal, Artetxe, Chen, Chen, Dewan, Diab, Li, Lin et~al.}]{facebook125m}
+Susan Zhang, Stephen Roller, Naman Goyal, Mikel Artetxe, Moya Chen, Shuohui Chen, Christopher Dewan, Mona Diab, Xian Li, Xi~Victoria Lin, and 1 others. 2022.
+\newblock Opt: Open pre-trained transformer language models.
+\newblock \emph{arXiv preprint arXiv:2205.01068}.
 
 \end{thebibliography}
