@@ -77,108 +77,110 @@
 \maketitle
 
 \begin{abstract}
-  DetectGPT introduced a sampling-based zero shot detector that exploits local curvature of the log likelihood surface to distinguish machine-generated from human written text. Fast DetectGPT later proposed a faster method that maintains strong performance with reduced computational cost. In this project we reproduce Fast DetectGPT as baselines with new source models (R1-8B, Phi-2, Mistral-7B, GPT-4o mini). We evaluate on three datasets: Xsum, which has already been used in the previous work, and HC3, which is a new dataset and Scottish Gaelic as an underrepresented language. We introduce a novel adversarial setting: the Mid-k perturbation attack that forces the generator to avoid high-probability tokens at random positions. Our results show that Fast DetectGPT remains effective across diverse models and datasets, but Mid-K perturbation can trick the detector.
+  DetectGPT introduced a zero-shot, sampling-based method for detecting machine-generated text by exploiting the local curvature of a model's log-likelihood function. Fast-DetectGPT later improved this method, matching performance at far lower cost. In this work, we reproduce Fast-DetectGPT and extend evaluation to new source models (DeepSeek R1 Distill Llama, Microsoft Phi 2, Mistral 7B, GPT-4o mini). We assess performance on three datasets: XSum, HC3, and Scottish Gaelic from XL-Sum as an under-represented language. Additionally, we propose a novel adversarial setting: the Mid-K perturbation attack, which forces the generator to avoid high-probability tokens at random positions during decoding. Our results show that Fast-DetectGPT remains highly effective and can generalize well across diverse models, datasets, and languages, but that decoding perturbations reduce its accuracy, revealing a key vulnerability. The original code and our extensions are available on GitHub: \url{https://github.com/salvatorpes/zero-shot-llm-detection}.
 \end{abstract}
+
 
 \section{Introduction}
 
-Large language models (LLMs) such as ChatGPT \cite{GPT3}, have revolutionized content creation across industries, from journalism to academic research. However, their unprecedented fluency has raised significant concerns about misuse in generating fake news \cite{ahmed2021detectingfakenewsusing}, fraudulent reviews \cite{adelani2019generatingsentimentpreservingfakeonline}, and facilitating plagiarism \cite{Lee_2023}. The challenge of distinguishing machine-generated from human-written text has become increasingly difficult, even for experts \cite{shahid2022areyouacyborg}, creating the necessity for reliable automated detection methods.
+Large language models (LLMs) such as ChatGPT \cite{GPT3}, have transformed content creation in journalism, education, and research. However, their fluency raises concerns about misuse, especially in the generation of fake news \cite{ahmed2021detectingfakenewsusing}, fraudulent reviews \cite{adelani2019generatingsentimentpreservingfakeonline}, and plagiarism \cite{Lee_2023}. As these models become increasingly better, distinguishing machine- from human-written text is difficult even for experts \cite{shahid2022areyouacyborg}, highlighting the need for reliable automated detection methods.
 
-Current detection approaches fall into two categories: supervised classifiers (LLMs fine-tuned on human and AI-written data to learn how to classify them) \cite{mitrovic2023chatgpthumandetectexplain} and zero-shot methods \cite{su2023detectllm} (do not require any fine-tuning, only largely trained models). While supervised methods perform well within their training domains, they suffer from poor generalization across different domains and models. Zero-shot detectors offer better domain robustness by leveraging pre-trained language models without fine-tuning, relying on universal features that generalize across contexts.
+Detection approaches fall into two groups: \textit{supervised classifiers} and \textit{zero-shot methods}. Supervised detectors rely on fine-tuning language models with labeled human and machine-written examples to learn distinguishing patterns \cite{mitrovic2023chatgpthumandetectexplain}. Although effective within their training domains, such models tend to generalize poorly to unseen models or domains \cite{bakhtin2019realfakelearningdiscriminate}. In contrast, zero-shot methods \cite{su2023detectllm} leverage pre-trained language models without additional training, relying on generalizable statistical or probabilistic clues instead. This makes them more robust to domain and model variations.
 
-Zero-shot detectors are LLM-based algorithms that identify machine-generated text by looking at its inherent properties, e.g., their rank, likelihood, entropy. We assume that machine-generated text has different statistical properties than human-written text, allowing us to distinguish between the two. For instance, the log-likelihood of machine-generated text is often higher than that of human-written text, as LLMs tend to produce more probable sequences when decoding. Hence, by desiging a simple algorithm that compares an internal property of a candidate text with a threshold, we can classify it as machine-generated or human-written.
-
-
-\section{Methodology}
-% detect 
-% fast 
-% attack 
-
-We frame machine-generated text detection as a zero-shot binary classification problem. given a candidate passage, determine whether it was written by a human or generated by a language model. Our methodology builds on two recent approaches, DetectGPT and Fast-DetectGPT, and extends them to new models, datasets, and an adversarial attack.
-
-\subsection{Datasets}
-
-The models are trained on synthetic datasets generated by prompting the source model with the first 30 tokens of sentences from human-written datasets. The source model then generates a continuation up to an average of 230 tokens, producing machine-generated text samples.
-
-Our implementation will use two human-written datasets: XSum \cite{XSum}, a large collection of documents and their respective summaries, and HC3 \cite{HC3}, which consists of pairs of human and GPT 3.5 generated answers to corresponding questions (for which only the human answers are used).
+Zero-shot detectors operate by identifying intrinsic statistical properties of text, such as word ranking, token likelihood, and entropy. The key assumption is that machine-generated and human-written texts show different statistical properties. For example, LLMs typically assign higher log-likelihoods to their own outputs than to human-written passages, as they favour more probable sequences and tokens during decoding. Therefore, by designing algorithms that measure internal text properties and compare them against a threshold, we can classify them as machine-generated or human-written.
 
 
+\section{Methodology}\label{sec:methodology}
+
+We frame detection as \textit{zero-shot binary classification}: given a candidate passage, determine whether it was written by a human or generated by a language model. We build on DetectGPT and Fast-DetectGPT, extending to new models, datasets, and introducing a novel adversarial attack.
 
 \subsection{Methods}
 
-Baseline Methods focus solely on comparing internal model properties of candidate passages with a threshold to classify them as human or machine-generated.
+Baseline methods compare internal model properties against a threshold to decide if text is human- or machine-generated.
 
-DetectGPT \cite{detectgpt}, introduced a sampling-based criterion for detection. The key hypothesis is that model generated text tends to lie in regions of negative curvature of the log-likelihood surface of the source model. DetectGPT generates multiple perturbations of a candidate passage using a masked language model such as T5. It then compares the log probability of the original passage with those of its perturbations under the source model. If the original passage consistently receives a higher log probability than its perturbations, it is likely machine-generated. However, this approach requires scoring a large number of perturbations per passage (often 100+), making it computationally expensive.
+DetectGPT \cite{detectgpt} introduced a sampling-based criterion for detection. Its central hypothesis is that model-generated text variations tend to exhibit lower log-probabilities than the original, placing them in regions of negative curvature within the source model’s log-likelihood function. DetectGPT generates multiple perturbations of a candidate passage using a masked language model (e.g., T5), then scores both the original and its perturbations with the source model. If the original scores higher than its perturbations, it is likely machine-generated; otherwise human-written. While effective, this method is computationally expensive, as it requires scoring a large number of perturbations per passage (often more than 100).
 
-Fast-DetectGPT replaces DetectGPT’s perturb-and-rescore pipeline with a single-pass estimate of a conditional probability curvature. Framed as sequential token selection, the hypothesis is that models approximate the modal human distribution, selecting safer, higher-probability tokens, in contrast to individuals whose distinctive styles produce less common selections. Consequently, machine-written passages tend to appear near local maxima of the conditional probability function, yielding positive curvature, whereas human text yields curvature near zero. Operationally, Fast-DetectGPT samples alternative token choices independently at each position conditioned on the observed prefix, computes their conditional probabilities under a scoring model, and aggregates these scores into a curvature statistic. Crucially, all alternatives are produced in one sampling call and scored in one batched forward pass, eliminating the need to evaluate multiple perturbations per passage. The resulting detector achieves strong accuracy while increasing efficiency significantly.
+Fast-DetectGPT replaces DetectGPT’s perturb-and-score pipeline with a single-pass estimate of the conditional probability curvature. Framed as a sequential token selection problem, the hypothesis is that language models approximate the modal human distribution, favouring safer, higher-probability tokens, whereas individuals choose more diverse words. Consequently, model-generated text tends to lie near local maxima of the conditional probability function (positive curvature), while human text remains closer to flat regions (curvature near zero). 
 
+Operationally, Fast-DetectGPT samples alternative token choices independently at each position (conditioned on the observed prefix), computes their conditional probabilities under a scoring model, and aggregates these into a curvature statistic. All alternatives are produced once and scored in a single batch, avoiding per-perturbation scoring. Accuracy matches DetectGPT with far better efficiency.
+% \vspace{-1em}
 \begin{equation}
-  \sum_{i} (\log p_\theta (\tilde{x}_i)-\tilde{\mu})/\tilde{\sigma} > \epsilon \rightarrow x \text{ is AI-generated} \label{eq:fastdetect}
+  \sum_{i} (\log p_\theta (\tilde{x}_i)-\tilde{\mu})/\tilde{\sigma} > \epsilon \rightarrow x \text{ is machine} 
+  \label{eq:fastdetect}
 \end{equation}
 
-In \cref{eq:fastdetect}, $\tilde{x}_i$ are the perturbations of the candidate passage $x$ generated by a sampling model $q_\varphi(\tilde{x}|x)$, $p_\theta$ is the scoring model, $\tilde{\mu}$ and $\tilde{\sigma}$ are the sample mean and standard deviation of the log probabilities of the perturbations under $p_\theta$, and the threshold $\epsilon$ is a tunable hyperparameter. The detector classifies $x$ as machine-generated if its standardized log probability exceeds the threshold. \cref{eq:fastdetect} is also valid for DetectGPT when $q_\varphi(\tilde{x}|x)$ is replaced by the perturbation distribution.
-The pseudo-code is presented in \cref{alg:fastdetectgpt} for Fast-DetectGPT and \cref{alg:detectgpt} for DetectGPT.
+In \cref{eq:fastdetect}, $\tilde{x}_i$ are perturbations of the candidate passage $x$ generated by a sampling model $q_\varphi(\tilde{x}|x)$, $p_\theta$ is the scoring model, $\tilde{\mu}$ and $\tilde{\sigma}$ are the sample mean and standard deviation of the perturbation log-probabilities under $p_\theta$, and $\epsilon$ is a tunable threshold. The passage $x$ is classified as machine-generated if its standardized log-probability exceeds $\epsilon$. This formulation is also valid for DetectGPT when $q_\varphi(\tilde{x}|x)$ corresponds to its perturbation distribution. The pseudocode for both algorithms is presented in \cref{alg:fastdetectgpt} and \cref{alg:detectgpt}.
 
 \subsection{Models}
 
-Fast-DetectGPT employs three distinct model components:
-\begin{enumerate}[leftmargin=*]
-  \item \textbf{Source model}: Generates candidate text by conditioning on human-written prefixes (first 30 tokens) and decoding from them.
-  \item \textbf{Sampling model} ($q_\varphi$): Provides conditional token distributions for generating perturbations $\tilde{x}_i$ of candidate passage $x$.
-  \item \textbf{Scoring model} ($p_\theta$): Computes log-probabilities for evaluating perturbed sequences.
-\end{enumerate}
-Detection experiments operate under two settings: \textit{white-box} (identical source and scoring models) and \textit{black-box} (real-life setting). The sampling model may differ from the scoring model in both settings, potentially improving detection performance when they are not identical.
+Fast-DetectGPT employs three main model components: the source model, which generates candidate text by conditioning on a human-written prefix (first 30 tokens) and decoding from it; the sampling model which produces conditional token distributions used to generate perturbations $\tilde{x}_i$ of each candidate passage $x$; and the scoring model scores log-probabilities.
+% \begin{enumerate}[leftmargin=*]
+%   \item \textbf{Source model}: Generates candidate text by conditioning on a human-written prefix (first 30 tokens) and decoding from it.
+%   \item \textbf{Sampling model} ($q_\varphi$): Produces conditional token distributions used to generate perturbations $\tilde{x}_i$ of each candidate passage $x$.
+%   \item \textbf{Scoring model} ($p_\theta$): Computes log-probabilities for evaluating the perturbed sequences.
+% \end{enumerate}
+
+Detection experiments are conducted under two configurations:
+\textit{white-box} (where source and scoring models are identical) and \textit{black-box} (a more realistic setting). %The sampling model may differ from the scoring model in both cases, which can sometimes enhance detection robustness when they are not the same.
+
+\subsection{Datasets}
+
+The models are evaluated on synthetic datasets created by prompting the source with the first 30 human tokens. The model then generates continuations up to an average of 230 total tokens, producing the necessary machine-generated text samples.
+
+We use two human-written datasets to construct these new synthetic ones:
+XSum \cite{XSum}, a large collection of documents and their summaries, and HC3 \cite{HC3}, a dataset of human and GPT-3.5-generated answers to the same questions (using only the human responses). From each, up to 500 human texts generate corresponding synthetic continuations.
 
 \subsection{Mid-K Attack}
-To evaluate detector robustness, we design the \textbf{Mid-K} perturbation attack. During generation, at a fixed number of randomly selected positions, the top-$K$ most probable tokens in the model’s next-token distribution are banned (their logits are set to $-\infty$), forcing the model to sample from less probable alternatives. 
-Mid-K is controlled by three parameters: $P$, the number of positions per sequence where the ban is applied; $K$, the number of top tokens to exclude at each selected position; and $S$ (optional), the first generated-token index eligible for perturbation (useful to avoid early tokens). For each sequence, we compute the maximum number of new tokens $M = \texttt{max\_length} - \texttt{prompt\_len}$ and select up to $P$ distinct positions from the integer range $\{S, \ldots, M\}$. During decoding, whenever the current new-token index $t$ matches a selected position, we identify the top $K$ token indices in the logits and set those logits to $-\infty$, then continue sampling from the remaining distribution.
+
+To evaluate detector robustness, we introduce the Mid-K Attack, a perturbation strategy that alters the token selection process during generation. At a fixed number of randomly selected positions, the top-$K$ most probable tokens in the model’s next-token distribution are banned (logits set to $-\infty$), forcing sampling from lower-probability tokens.
+
+Mid-K has three parameters: $P$ (the number of positions per sequence where the ban is applied), $K$ (number of top tokens excluded at each position), and $S$ (the first generated-token index eligible for perturbation).
+% \begin{itemize}[leftmargin=*]
+%   \item $P$: number of positions per sequence where the ban is applied,
+%   \item $K$: number of top tokens excluded at each position,
+%   \item $S$ (optional): the first generated-token index eligible for perturbation (useful to avoid modifying early tokens).
+% \end{itemize}
+
+For each sequence, we compute the maximum number of generated tokens $M = \texttt{max\_length} - \texttt{prompt\_length}$ and select up to $P$ positions from $\{S, \ldots, M\}$. At each chosen position, we set the top-$K$ logits to $-\infty$ and sample from the remaining options.
+
 
 \section{Experiments}
-The experiments consist of comparing Fast-DetectGPT with three of the baselines referenced in the original study: Likelihood, Entropy and LogRank. The initial plan was to also compare them with DetectGPT, however, due to computational and time constraints, it could only be used one time (see Table \ref{tab:main_results}). These methods are analyzed in various settings such as different model architectures, datasets and under the mid-k attack, which will be detailed below. All experiments are performed exclusively in the whitebox mode, where the source, sampling and scoring model is the same over the entire run. Performance is measured by the ROC AUC score.
 
-\subsection{Implementation}
-
-The implementation of our methods is based on the original code provided by the authors of Fast-DetectGPT \footnote{\url{https://github.com/baoguangsheng/fast-detect-gpt}}. We introduced all necessary modifications to adapt it to our new introduced models, datasets, Mid-K adversarial attack.
-
-% SHOULD WE MENTION THE TIME COMPARISON BETWEEN FASTDETECT AND DETECT?
+Our experiments evaluate Fast-DetectGPT’s performance and robustness against three baseline methods from the original study (Likelihood, Entropy, and LogRank), across architectures, datasets, and adversarial settings. We report AUROC and run all experiments in the \textit{white-box} setting. DetectGPT was run only once due to computational limits (see Table~\ref{tab:main_results}).
 
 \subsection{Reproducibility Study}
-The first step in our experiment is to evaluate the detection methods on different model architectures and datasets. We chose three small open-weight models of varying sizes: DeepSeek R1 Distill Llama 8B \cite{deepseekai}, Microsoft Phi 2 (2.7B parameters) \cite{phi2} and Mistral 7B Instruct v0.2 \cite{mistral}. As for datasets, we compare a dataset used in the original study (XSum) with a newly introduced one (HC3). The aim is to understand if Fast-DetectGPT is robust to the topic, size and format of texts in its dataset, and to the model architecture and size, thus being reproducible.
 
-% Does the methodology explain dataset creation?
+We first assess the reproducibility and generalization of Fast-DetectGPT across different model architectures and datasets. We chose three small open-weight models of varying sizes: DeepSeek R1 Distill Llama 8B \cite{deepseekai}, Microsoft Phi-2 (2.7B parameters) \cite{phi2}, and Mistral 7B Instruct v0.2 \cite{mistral}. These models were evaluated on the datasets mentioned above, XSum and HC3.  This tests stability across domains, lengths, formats, and model sizes.
 
 \subsection{Closed-Weight API Model}
-In addition to the three open-weight models, we investigate the performance of Fast-DetectGPT with a closed-weight API model, namely GPT 4o mini. Unlike the first three, with this model only the first 20 probabilities can be accessed. Therefore, it cannot be compared side-by-side with the open weight models, as that may be unfair. Still, the goal is to see if this limitation affects model performance.
+
+To further test the method’s applicability, in addition to the three open-weight models, we evaluate Fast-DetectGPT on a closed-weight API model: GPT-4o mini. Unlike open-weight models, GPT-4o mini only gives access to the top-20 token probabilities per token. While this limitation prevents a direct comparison with the open-weight models, the goal of this experiment is to analyze how restricted access to token probabilities affects detection performance.
 
 \subsection{Low-Resource Language}
-Another experiment consists of evaluating Fast-DetectGPT on a dataset of a low resource language. For this we select the dataset {XL}Sum \cite{xlsum}, an extension of XSum for various different languages. We specifically focus on the Scottish Gaelic subset, with the intention to observe robustness to language.
+
+We also investigate Fast-DetectGPT’s robustness in low-resource language settings. For this, we employ the XL-Sum dataset \cite{xlsum}, an extension of XSum covering multiple languages, and focus on the Scottish Gaelic subset. This experiment aims to determine whether Fast-DetectGPT can maintain detection accuracy when applied to languages with limited pre-training data and distinctive linguistic characteristics.
 
 \subsection{Adversarial Attack}
-Finally, we evaluate the robustness of the detectors under the \textbf{Mid-K} attack described. The goal is to measure how detection performance degrades as the attack strength increases.
 
-\textit{Setup.} We conduct all adversarial experiments using the \textbf{GPT-2} model on the \textbf{XSum} dataset. For each example, the generator is prompted with the first 30 tokens and sampled up to a maximum length of 200 tokens. Mid-K is applied during decoding, while the detection pipeline (Fast-DetectGPT) remains unchanged so that differences in performance reflect the impact of the attack alone.
+Finally, we evaluate the robustness of all detectors under the Mid-K adversarial attack introduced in Section~\ref{sec:methodology}. The objective is to quantify how detection accuracy degrades as attack strength increases.
+
+%\textit{Setup.}  
+We conduct all adversarial experiments using the GPT-2 model on the XSum dataset, since the goal is to analyze the impact of Mid-K parameters rather than variations in models or datasets, and since we had to consider computational limitations. For each example, the generator is prompted with the first 30 tokens and produces a continuation of up to 200 tokens. The Mid-K attack is applied during decoding, while the detection pipeline (Fast-DetectGPT) remains unchanged, ensuring that any observed performance degradation is attributable only to the attack.
+
 % Should we cite GPT 2? and mention if it was used in the original study
 
-% Slightly confusing
-We explored the following parameter grid: 
-% Why is this slightly out of bounds?
-$P \in \{1,5,10,20,30,50,60,70,80,90,100,150\}$, 
-$K \in \{1,2,5,10,20\}$, and fixed $S=5$.
+%\textit{Parameter grid.}  
+We explore the following parameter ranges: $P \in \{1,5,10,20,30,50,60,70,80,90,100,150\}$,  $K \in \{1,2,5,10,20\}$, and fixed $S=5$. Each $(P, K)$ pair corresponds to one experiment, where Mid-K is applied at up to $P$ positions starting from token index $S$. In total, 60 parameter combinations are tested, covering a wide spectrum of perturbation strengths.
 
-Each grid point $(P,K)$ corresponds to one experiment where Mid-K is applied at up to $P$ positions starting from token index $S$. 
-
-\textit{Scope.} Since the aim was to study the effect of Mid-K parameters rather than model or dataset variation, and given limited computational resources, we fixed $S=5$ and restricted experiments to this single model–dataset pair. In total, we evaluated 60 parameter combinations covering a wide range of perturbation strengths.
-
-\section{Results}
-
-\subsection{Reproducibility}
+%\textit{Scope.}  
+% Since the goal is to analyze the impact of Mid-K parameters rather than variations in models or datasets, and since we had to consider computational limitations, all adversarial experiments are restricted to this single model–dataset configuration.
 
 \begin{table}[h]
     \centering
     \small
     \begin{tabular}{l|ccc|c}
     \toprule
-    \multirow{2}{*}{\textbf{Method}} & \multicolumn{4}{c}{\textbf{XSum}} \\
+    \multirow{2}{*}{\textbf{Method}} & \multicolumn{4}{c}{XSum} \\
     \cmidrule{2-5}
     & \textbf{R1-8B} & \textbf{Phi-2} & \textbf{Mistral} & \textbf{Avg.} \\
     \midrule
@@ -188,14 +190,13 @@ Each grid point $(P,K)$ corresponds to one experiment where Mid-K is applied at 
     \midrule
     DetectGPT & 0.8560 & - & - & - \\
     Fast-DetectGPT & \textbf{1.0000} & \textbf{0.9769} & \textbf{0.9989} & \textbf{0.9919} \\
-    (Diff) & 0.1440 & - & - & - \\
     \bottomrule
     \end{tabular}
     \vspace{0.5em}
     
     \begin{tabular}{l|ccc|c}
     \toprule
-    \multirow{2}{*}{\textbf{Method}} & \multicolumn{4}{c}{\textbf{HC3}} \\
+    \multirow{2}{*}{\textbf{Method}} & \multicolumn{4}{c}{HC3} \\
     \cmidrule{2-5}
     & \textbf{R1-8B} & \textbf{Phi-2} & \textbf{Mistral} & \textbf{Avg.} \\
     \midrule
@@ -207,48 +208,71 @@ Each grid point $(P,K)$ corresponds to one experiment where Mid-K is applied at 
     \bottomrule
     \end{tabular}
     \vspace{0.5em}
-    \caption{Detection performance (AUROC) on XSum and HC3 datasets across three new source-models. Fast-DetectGPT is compared with three baselines, and only in 1 case with DetectGPT due to computational and time constraints. FastDetectGPT always achieves the best results.}
+    \caption{AUROC results on XSum and HC3 across three new models. Fast-DetectGPT consistently outperforms all other methods.}
     \label{tab:main_results}
 \end{table}
 
-The results for the main reproducibility experiment are reported in \cref{tab:main_results}. As expected, FastDetectGPT displays the best performance over all models and datasets. The Likelihood and LogRank baselines are the next in the ranking, following Fast-DetectGPT closely with XSum but being sligthly lower with HC3, while Entropy visibly falls last. As mentioned before, DetectGPT could only be utilized one time, which was with R1-8B on XSum, its performance being only better than the Entropy baseline. This demonstrates the power of FastDetect-GPT over other methods.
+\section{Results}
 
-Moreover, it can be noticed that the model size directly influences the score (i.e.: a higher model achieves better performance). However, the difference is not significant enough to prove a lack of robustness. 
+\subsection{Reproducibility}
 
-The results also differ from a dataset to another. It seems that most methods perform better on XSum than on HC3, while for Entropy it is the opposite case. The difference seems larger than that between models. This could be caused by the dataset size or by the diversity of text samples. Still, it does not deny the fact that Fast-DetectGPT dominates over the other detection methods.
+Table \ref{tab:main_results} shows that Fast-DetectGPT achieves the highest performance across all tested models and datasets. Among the baselines, Likelihood and LogRank follow closely on XSum, while Entropy consistently performs worst. The only available comparison with DetectGPT (R1-8B on XSum) shows that it lags behind all methods except Entropy.
+
+Moreover, model size appears to have a mild positive effect on detection performance, with larger architectures achieving slightly higher AUROC scores. However, these differences are not significant enough to suggest any lack of robustness or scalability in Fast-DetectGPT.
+
+Performance differences are more pronounced across datasets. Most methods, including Fast-DetectGPT, perform better on XSum than on HC3, possibly due to variations in dataset size, topic distribution, or stylistic diversity. Interestingly, Entropy exhibits the opposite trend, performing marginally better on HC3. Despite these variations, Fast-DetectGPT consistently outperforms all baselines, demonstrating its robustness across both datasets and model architectures.
 
 \subsection{API Model}
 
-\begin{table}[H]
+% DO NOT DELETE. WAITING FOR FULL RESULTS.
+
+% \begin{table}[h]
+%     \centering
+%     \small
+%     \begin{tabular}{l|cc|c}
+%     \toprule
+%     \multirow{2}{*}{\textbf{Method}} & \multicolumn{3}{c}{\textbf{GPT 4o mini}} \\
+%     \cmidrule{2-4}
+%     & XSum & HC3 & \textbf{Avg.} \\
+%     \midrule
+%     Likelihood & 0.1848 & 0.0000 & 0.0000 \\
+%     Entropy &  \textbf{0.9904} & \textbf{0.9985} & 0.9945 \\
+%     LogRank & 0.0000 & 0.0000 & 0.0000 \\
+%     \midrule
+%     Fast-DetectGPT & 0.8051 & 0.6026 & 0.7039 \\
+%     \bottomrule
+%     \end{tabular}
+%     \vspace{0.5em}
+%     \caption{AUROC results for the API experiment with GPT 4o mini over the two datasets. This model shows strange behaviors, with the entropy baseline performing very well, while Fast-DetetGPT and the other baselines perform very poorly. }
+%     \label{tab:API_results}
+% \end{table} 
+
+\begin{table}[h]
     \centering
     \small
     \begin{tabular}{l|cc|c}
     \toprule
     \multirow{2}{*}{\textbf{Method}} & \multicolumn{3}{c}{\textbf{GPT 4o mini}} \\
     \cmidrule{2-4}
-    & \textbf{XSum} & \textbf{HC3} & \textbf{Avg.} \\
+    & XSum & HC3 & \textbf{Avg.} \\
     \midrule
-    Likelihood & 0.0001 & 0.0000 & 0.0000 \\
-    Entropy &  \textbf{0.9904} & \textbf{0.9985} & 0.9945 \\
-    LogRank & 0.0000 & 0.0000 & 0.0000 \\
-    \midrule
-    Fast-DetectGPT & 0.2065 & 0.2123 & 0.2094 \\
+    Fast-DetectGPT & \textbf{0.8051} & 0.6026 & 0.7039 \\
     \bottomrule
     \end{tabular}
     \vspace{0.5em}
-    \caption{AUROC results for the API experiment with GPT 4o mini over the two datasets. This model shows strange behaviors, with the entropy baseline performing very well, while Fast-DetetGPT and the other baselines perform very poorly. }
+    \caption{AUROC results for the API experiment over the two datasets, only on Fast-DetectGPT. Performance is lower than with open-weight models.}
     \label{tab:API_results}
-\end{table}
+\end{table} 
 
-Table~\ref{tab:API_results} below shows the GPT 4o mini results. This time, the model is characterized by unstable behaviors, leading to Fast-DetectGPT to perform rather poorly, and for two of the baselines to fail completely. Surprisingly, the Entropy baseline yields the best ROC AUC scores. This can be explained by ... 
+Table~\ref{tab:API_results} summarizes the AUROC results for the GPT-4o mini API experiments. Overall, performance is substantially lower than for the open-weight counterparts, particularly on the HC3 dataset. This decline is likely caused by the API’s restriction to only return the top-20 token probabilities, which alters the underlying probability distribution available to the detector and limits the accuracy of its curvature-based computations.
 
-\subsection{Low-resource Language}
+% DO NOT DELETE. WAITING FOR FULL RESULTS.
 
-As for the Scottish-Gaelic language experiment, results can be seen in Table \ref{tab:scotgal_results}. This table demonstrates that all methods, with the exception of the Entropy baseline, keep a mostly consistent behavior and good, or even slightly better performance than on the English datasets. The Entropy however has a significantly lower performance than usual.
+% Table~\ref{tab:API_results} reports the AUROC scores for the GPT-4o mini API experiments. Unlike the open-weight models, GPT-4o mini exhibits unstable behavior: Fast-DetectGPT performs relatively poorly, while both Likelihood and LogRank fail entirely. In contrast, the Entropy baseline achieves near-perfect accuracy across both datasets, which is an unexpected outcome given its weak performance in previous experiments.
 
-\subsection{Mid-K Attack}
+% This unexpected outcome is likely due to the API’s limitation of exposing only the top 20 token probabilities, which distorts the probability distribution seen by the detector. As a result, Fast-DetectGPT’s curvature-based statistic becomes unreliable, while entropy, which is being calculated from a smaller but consistent portion of the probability mass, remains informative.
 
-\begin{table}[H]
+\begin{table}[h]
     \centering
     \small
     \begin{tabular}{l|ccc|c}
@@ -268,20 +292,35 @@ As for the Scottish-Gaelic language experiment, results can be seen in Table \re
     \caption{AUROC results for the under-represented language experiment. Surprisingly, Fast-DetectGPT performs slightly worse than the LogRank baseline.}
     \label{tab:scotgal_results}
 \end{table}
-We report results for the Mid-K adversarial attack applied to GPT-2 on the XSum dataset. Detection performance is measured by ROC AUC, and text quality by mean sampled perplexity.
 
-\textit{Detection performance.} Figure~\ref{fig:ROC_attack} shows that ROC AUC steadily decreases as the number of perturbed positions ($P$) increases. The unperturbed baseline achieves a ROC AUC of $0.9941$, confirming that the detector performs almost perfectly without attacks. However, even moderate perturbations strongly degrade performance—for example, with $P=50, K=3$ the ROC AUC drops to $0.5287$, and with $P=60, K=2$ it falls further to $0.512$. In these cases, the attack causes little visible change to the text, yet detection becomes nearly random, indicating that the detector’s signal is highly sensitive to subtle sampling perturbations.
+\subsection{Low-resource Language}
 
-\textit{Perplexity.} As shown in Figure~\ref{fig:perplexity}, mean perplexity grows with stronger perturbations
+Table~\ref{tab:scotgal_results} presents the results for the Scottish Gaelic experiment. All methods except Entropy remain strong, matching or slightly exceeding English results. In contrast, the Entropy baseline performs notably worse, indicating that it may be more sensitive to linguistic differences or data sparsity in low resource settings.
 
-Overall, the Mid-K attack demonstrates that small, probabilistic manipulations of the decoding process can sharply reduce detector accuracy
+\subsection{Mid-K Attack}
+
+
+Figure~\ref{fig:ROC_attack} shows that AUROC steadily declines as the number of perturbed positions ($P$) increases. The unperturbed baseline achieves an AUROC of $0.9941$, near-perfect baseline. However, even moderate perturbations significantly reduce detection capability. For example, with $P=50, K=3$, AUROC drops to $0.5287$, and with $P=60, K=2$, it decreases further to $0.512$. These perturbations barely alter the text but make detection nearly random, suggesting that Fast-DetectGPT is highly sensitive to subtle sampling noise in the generation process.
+
+\textit{Perplexity.}  
+As illustrated in Figure~\ref{fig:perplexity} in Appendix~\ref{appendix:perplexity}, mean perplexity increases with the strength of the perturbation, reflecting greater sampling uncertainty and linguistic variation.
+
+\textit{Summary.}  
+Overall, the Mid-K attack reveals that small probabilistic manipulations during decoding can sharply degrade detector accuracy without significantly altering the text. This highlights a key vulnerability of curvature-based zero-shot detectors and emphasizes the importance of robustness evaluation under adversarial conditions.
 
 \section{Conclusion}
 
-Write conclusion here
+This study extended and evaluated the Fast-DetectGPT framework for machine-generated text detection across new models, datasets, and adversarial conditions. Experiments show Fast-DetectGPT consistently outperforms zero-shot baselines like Likelihood, Entropy, and LogRank, achieving near-perfect detection performance in most settings. The method also generalizes well across model architectures, dataset domains, and even to low-resource languages, confirming its robustness and reproducibility.
+
+However, our findings also highlight important limitations. When applied to closed-weight API models like GPT-4o mini, where only limited probability information is accessible, Fast-DetectGPT’s effectiveness drops significantly, revealing a dependency on full token distributions. Furthermore, adversarial experiments with the Mid-K attack show that even minimal perturbations to the decoding process can sharply degrade detection accuracy, highlighting the need for detectors that are resistant to probabilistic manipulations.
+
+In summary, Fast-DetectGPT provides a fast, effective, and generalizable approach to identifying AI-generated text, but its sensitivity to incomplete probability access and sampling perturbations suggests that future work should focus on improving robustness.
 
 
-
+% Bibliography entries for the entire Anthology, followed by custom entries
+%\bibliography{anthology,custom}
+% Custom bibliography entries only
+\bibliography{custom}
 
 \newpage
 
@@ -289,7 +328,15 @@ Write conclusion here
 
 \appendix
 
+\section{Implementation}
+
+The implementation of our methods is based on the original code provided by the authors of Fast-DetectGPT \footnote{\url{https://github.com/baoguangsheng/fast-detect-gpt}}. We introduced all necessary modifications to adapt it to our new introduced models, datasets, Mid-K adversarial attack in a new repository \footnote{\url{https://github.com/salvatorpes/zero-shot-llm-detection}}.
+
+\section{Speed Comparison}
+Despite the use of DetectGPT being rather limited, there is one additional insight that could be extracted from its single use: the inference time. Running DetectGPT on XSum with the DeepSeek R1 model took 7 hours, 47 minutes and 43 seconds, which is approximately 118.9 times slower than Fast-DetectGPT which took only 3 minutes and 56 seconds for the same setting. This proves the claim that Fast-DetectGPT is more efficient by multiple orders of magnitude, but stays far behind the 340x speed-up reported in the original paper.
+
 \section{Additional Results}
+\label{appendix:perplexity}
 
 \begin{figure}[H]
     \centering
@@ -301,7 +348,7 @@ Write conclusion here
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.45\textwidth]{graphs/attack/roc_vs_pos_by_k.pdf} % scale as needed
-    \caption{ROC AUC vs number of perturbed positions, shown separately for different cutoff values. The dashed line indicates baseline performance without perturbation. ROC AUC decreases as the number of perturbations increases, with larger cutoffs accelerating the degradation. Results are reported for GPT-2 (124M)~\cite{radford2019language}.}
+    \caption{AUROC vs number of perturbed positions, shown separately for different cutoff values. The dashed line indicates baseline performance without perturbation. AUROC decreases as the number of perturbations increases, with larger cutoffs accelerating the degradation. Results are reported for GPT-2 (124M)~\cite{radford2019language}.}
     \label{fig:ROC_attack}
 \end{figure}
 
@@ -365,11 +412,6 @@ Write conclusion here
 
 
 
-\newpage
 
-% Bibliography entries for the entire Anthology, followed by custom entries
-%\bibliography{anthology,custom}
-% Custom bibliography entries only
-\bibliography{custom}
 
 \end{document}
