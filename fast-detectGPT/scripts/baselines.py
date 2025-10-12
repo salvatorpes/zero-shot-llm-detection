@@ -9,8 +9,6 @@ import torch.nn.functional as F
 import tqdm
 import argparse
 import json
-import math
-from openai import OpenAI
 from data_builder import load_data
 from model import load_tokenizer, load_model, openai_models
 from metrics import get_roc_metrics, get_precision_recall_metrics
@@ -66,22 +64,25 @@ def get_entropy(logits, labels):
     entropy = -entropy.sum(-1)
     return entropy.mean().item()
 
+def _mean_ignore_nones(xs):
+    xs = [x for x in xs if x is not None]
+    return float(np.mean(xs)) if xs else float("nan")
+
 def _approx_rank_from_tops(tokens, tops, use_log=False, default_top_k=20):
     ranks = []
     for tok, top in zip(tokens, tops):
         if not top:
             continue
-        # top is a list of dicts: {"token", "logprob", "rank"}
+        # top: [{'token', 'logprob', 'rank'}] — rank is 0-indexed in most wrappers
         found_rank = next((t["rank"] for t in top if t["token"] == tok), None)
         k = len(top) if len(top) > 0 else default_top_k
-        r = (found_rank + 1) if found_rank is not None else (k + 1)
+        r = (found_rank + 1) if found_rank is not None else (k + 1)  # not found -> k+1
         ranks.append(float(r))
     if not ranks:
         return float("nan")
     if use_log:
         return -float(np.mean(np.log(np.array(ranks, dtype=np.float64))))
     return -float(np.mean(ranks))
-
 
 def _approx_entropy_from_tops(tops):
     ents = []
@@ -118,48 +119,55 @@ def experiment(args):
         'entropy': get_entropy
     }
 
-    for name in criterion_fns:
-        criterion_fn = criterion_fns[name]
+    is_openai_model = args.scoring_model_name in openai_models
+    top_k, max_length = 20, 300
+
+    for name, criterion_fn in criterion_fns.items():
         torch.manual_seed(args.seed)
         np.random.seed(args.seed)
         eval_results = []
-        
-        is_openai_model = args.scoring_model_name in openai_models
-        top_k, max_length = 20, 300
-        
+
         for idx in tqdm.tqdm(range(n_samples), desc=f"Computing {name} criterion"):
             original_text = data["original"][idx]
             sampled_text = data["sampled"][idx]
-            
-            if is_openai_model:
 
-                sampled_score_logs = data["sampled_logprobs"][idx]
-                original_score_logs = scoring_model.score_text_with_logprobs(text=original_text, top_k=top_k, max_length=300)
+            if is_openai_model:
+                original_logs = scoring_model.score_text_with_logprobs(
+                    text=original_text, top_k=top_k, max_length=max_length
+                )
+                sampled_logs = scoring_model.score_text_with_logprobs(
+                    text=sampled_text, top_k=top_k, max_length=max_length
+                )
 
                 if name == 'likelihood':
-                    o_ll = original_score_logs.get("token_logprobs", [])
-                    s_ll = sampled_score_logs.get("token_logprobs", [])
-                    original_crit = float(np.mean(o_ll)) if len(o_ll) else float("nan")
-                    sampled_crit = float(np.mean(s_ll)) if len(s_ll) else float("nan")
+                    # mean token logprob (matches open path's mean across positions)
+                    o_ll = original_logs.get("token_logprobs", []) or []
+                    s_ll = sampled_logs.get("token_logprobs", []) or []
+                    original_crit = _mean_ignore_nones(o_ll)
+                    sampled_crit = _mean_ignore_nones(s_ll)
 
                 elif name in ('rank', 'logrank'):
                     use_log = (name == 'logrank')
                     original_crit = _approx_rank_from_tops(
-                        original_score_logs.get("tokens", []),
-                        original_score_logs.get("top_logprobs_per_token", []),
+                        original_logs.get("tokens", []) or [],
+                        original_logs.get("top_logprobs_per_token", []) or [],
                         use_log=use_log,
                         default_top_k=top_k
                     )
                     sampled_crit = _approx_rank_from_tops(
-                        sampled_score_logs.get("tokens", []),
-                        sampled_score_logs.get("top_logprobs_per_token", []),
+                        sampled_logs.get("tokens", []) or [],
+                        sampled_logs.get("top_logprobs_per_token", []) or [],
                         use_log=use_log,
                         default_top_k=top_k
                     )
 
                 elif name == 'entropy':
-                    original_crit = _approx_entropy_from_tops(original_score_logs.get("top_logprobs_per_token", []))
-                    sampled_crit = _approx_entropy_from_tops(sampled_score_logs.get("top_logprobs_per_token", []))
+                    original_crit = _approx_entropy_from_tops(
+                        original_logs.get("top_logprobs_per_token", []) or []
+                    )
+                    sampled_crit = _approx_entropy_from_tops(
+                        sampled_logs.get("top_logprobs_per_token", []) or []
+                    )
 
             else:
                 # original text
@@ -191,7 +199,6 @@ def experiment(args):
                 "sampled_crit": sampled_crit
             })
 
-        # compute prediction scores for real/sampled passages
         predictions = {
             'real': [x["original_crit"] for x in eval_results],
             'samples': [x["sampled_crit"] for x in eval_results]
@@ -201,23 +208,20 @@ def experiment(args):
         p, r, pr_auc = get_precision_recall_metrics(predictions['real'], predictions['samples'])
         print(f"Criterion {name}_threshold ROC AUC: {roc_auc:.4f}, PR AUC: {pr_auc:.4f}")
 
-        # log results
         results_file = f'{args.output_file}.{name}.json'
         results = {
             'name': f'{name}_threshold',
-            'info': {
-                'n_samples': n_samples
-            },
+            'info': {'n_samples': n_samples},
             'predictions': predictions,
             'raw_results': eval_results,
             'metrics': {
-                'roc_auc': roc_auc, 
-                'fpr': fpr, 
+                'roc_auc': roc_auc,
+                'fpr': fpr,
                 'tpr': tpr
             },
             'pr_metrics': {
-                'pr_auc': pr_auc, 
-                'precision': p, 
+                'pr_auc': pr_auc,
+                'precision': p,
                 'recall': r
             },
             'loss': 1 - pr_auc
@@ -237,5 +241,4 @@ if __name__ == '__main__':
     parser.add_argument('--device', type=str, default="cuda")
     parser.add_argument('--cache_dir', type=str, default="../cache")
     args = parser.parse_args()
-
     experiment(args)

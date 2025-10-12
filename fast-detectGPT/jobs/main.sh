@@ -18,13 +18,13 @@ mkdir -p $exp_path $data_path $res_path
 datasets="xsum hc3" # A BASELINE + OUR DATASET
 source_models="gpt-4o-mini" # OUR FUNCTIONING MODELS
 
-# preparing dataset
-for D in $datasets; do
-  for M in $source_models; do
-    echo `date`, Preparing dataset ${D}_${M} ...
-    python scripts/data_builder.py --dataset $D --n_samples 500 --do_top_k --base_model_name $M --output_file $data_path/${D}_${M}
-  done
-done
+# # preparing dataset
+# for D in $datasets; do
+#   for M in $source_models; do
+#     echo `date`, Preparing dataset ${D}_${M} ...
+#     python scripts/data_builder.py --dataset $D --n_samples 500 --do_top_k --base_model_name $M --output_file $data_path/${D}_${M}
+#   done
+# done
 
 # White-box Setting
 echo `date`, Evaluate models in the white-box setting:
