@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.5)  12 OCT 2025 10:43
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.5)  12 OCT 2025 22:24
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -492,6 +492,7 @@ Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: End \AtBeginDocument code.
 Package hyperref Info: Link coloring ON on input line 75.
+(./acl_latex.out) (./acl_latex.out)
 \@outlinefile=\write3
 \openout3 = `acl_latex.out'.
 
@@ -512,7 +513,7 @@ LaTeX Info: Redefining \showhyphens on input line 75.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
-(/usr/local/texlive/2024/texmf-dist/tex/latex/microtype/mt-ptm.cfg
+ (/usr/local/texlive/2024/texmf-dist/tex/latex/microtype/mt-ptm.cfg
 File: mt-ptm.cfg 2006/04/20 v1.7 microtype config. file: Times (RS)
 ) (/usr/local/texlive/2024/texmf-dist/tex/latex/upquote/upquote.sty
 Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verbatim
@@ -533,6 +534,21 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `zi4' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
+LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
+(Font)              scaled to size 10.0pt on input line 80.
+
+Underfull \hbox (badness 1968) in paragraph at lines 80--81
+\T1/ptm/m/n/10 (+20) text by ex-ploit-ing the lo-cal cur-va-ture of
+ []
+
+
+Underfull \hbox (badness 2050) in paragraph at lines 80--81
+\T1/ptm/m/n/10 (+20) a model's log-likelihood func-tion. Fast-
+ []
+
+
+Package natbib Warning: Citation `bakhtin2019realfakelearningdiscriminate' on page 1 undefined on input line 88.
+
 
 
 
@@ -542,144 +558,164 @@ Package microtype Info: Loading generic protrusion settings for font family
 
 
 ]
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 128--129
-[]\T1/ptm/b/n/10.95 (+20) Scoring model \T1/ptm/m/n/10.95 (+20) ($\OML/cmm/m/it/10.95 p[]$\T1/ptm/m/n/10.95 (+20) ): Com-putes log-
+Underfull \hbox (badness 1137) in paragraph at lines 103--104
+\T1/ptm/m/n/10.95 (+20) higher-probability to-kens, whereas in-di-vid-u-als
  []
 
 
-Underfull \hbox (badness 6236) in paragraph at lines 128--129
-\T1/ptm/m/n/10.95 (+20) probabilities for eval-u-at-ing per-turbed se-
- []
 
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 10.95pt on input line 134.
+(Font)              scaled to size 10.95pt on input line 144.
 
 
 [2]
-Underfull \hbox (badness 2980) in paragraph at lines 137--138
-\T1/ptm/m/n/10.95 (+20) The ex-per-i-ments con-sist of com-par-ing Fast-
- []
 
-LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 9.0pt on input line 141.
-
-Underfull \hbox (badness 10000) in paragraph at lines 141--141
-[][][][][]$\T1/zi4/m/n/9 https : / / github . com / baoguangsheng /
- []
+LaTeX Warning: Reference `sec:methodology' on page 3 undefined on input line 165.
 
 
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 163--167
+Underfull \hbox (badness 10000) in paragraph at lines 173--174
 \OMS/cmsy/m/n/10.95 f\OT1/cmr/m/n/10.95 1\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 5\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 10\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 20\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 30\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 50\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 60\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 70\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 80\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 90\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 100\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 150\OMS/cmsy/m/n/10.95 g$\T1/ptm/m/n/10.95 (+20) ,
  []
 
 
-Overfull \hbox (2.01273pt too wide) in paragraph at lines 179--195
+
+
+Overfull \hbox (2.01273pt too wide) in paragraph at lines 181--196
  [][] 
  []
 
 
-Overfull \hbox (2.01273pt too wide) in paragraph at lines 196--210
+Overfull \hbox (2.01273pt too wide) in paragraph at lines 197--211
  [][] 
  []
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
 
 
 
 [3]
-Underfull \vbox (badness 3439) has occurred while \output is active []
+Underfull \hbox (badness 1107) in paragraph at lines 267--268
+\T1/ptm/m/n/10.95 (+20) the GPT-4o mini API ex-per-i-ments. Over-all,
+ []
 
 
-
-
-Overfull \hbox (2.01273pt too wide) in paragraph at lines 254--267
+Overfull \hbox (2.01273pt too wide) in paragraph at lines 278--291
  [][] 
+ []
+
+
+
+
+LaTeX Warning: Reference `appendix:perplexity' on page 4 undefined on input line 306.
+
+
+Underfull \hbox (badness 1917) in paragraph at lines 313--314
+\T1/ptm/m/n/10.95 (+20) This study ex-tended and eval-u-ated the Fast-
+ []
+
+
+Underfull \hbox (badness 1142) in paragraph at lines 313--314
+\T1/ptm/m/n/10.95 (+20) DetectGPT con-sis-tently out-per-forms zero-shot
+ []
+
+(./acl_latex.bbl
+Underfull \hbox (badness 1466) in paragraph at lines 5--8
+\T1/ptm/m/n/10 (+20) Huy H. Nguyen, Ju-nichi Ya-m-ag-ishi, and Isao
  []
 
 
 
 [4]
+Underfull \hbox (badness 2486) in paragraph at lines 15--18
+\T1/ptm/m/n/10 (+20) Askell, Sand-hini Agar-wal, Ariel Herbert-Voss,
+ []
+
+
+Underfull \hbox (badness 1810) in paragraph at lines 15--18
+\T1/ptm/m/n/10 (+20) Clemens Win-ter, and 12 oth-ers. 2020.  [][]Lan-
+ []
 
 
 
-[5
+)
 
-]
-<graphs/attack/perplexity_main.pdf, id=119, 714.22142pt x 496.75336pt>
+[5]
+LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
+(Font)              scaled to size 9.0pt on input line 333.
+<graphs/attack/perplexity_main.pdf, id=214, 714.22142pt x 496.75336pt>
 File: graphs/attack/perplexity_main.pdf Graphic file (type pdf)
 <use graphs/attack/perplexity_main.pdf>
-Package pdftex.def Info: graphs/attack/perplexity_main.pdf  used on input line 296.
+Package pdftex.def Info: graphs/attack/perplexity_main.pdf  used on input line 343.
 (pdftex.def)             Requested size: 204.85846pt x 142.47816pt.
-<graphs/attack/roc_vs_pos_by_k.pdf, id=124, 853.09714pt x 563.53223pt>
+<graphs/attack/roc_vs_pos_by_k.pdf, id=219, 853.09714pt x 563.53223pt>
 File: graphs/attack/roc_vs_pos_by_k.pdf Graphic file (type pdf)
 <use graphs/attack/roc_vs_pos_by_k.pdf>
-Package pdftex.def Info: graphs/attack/roc_vs_pos_by_k.pdf  used on input line 303.
+Package pdftex.def Info: graphs/attack/roc_vs_pos_by_k.pdf  used on input line 350.
 (pdftex.def)             Requested size: 204.85846pt x 135.31927pt.
 
-Overfull \hbox (1.23639pt too wide) in paragraph at lines 312--330
+Overfull \hbox (1.23639pt too wide) in paragraph at lines 359--377
 [] 
  []
 
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 335.
 
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
+Underfull \vbox (badness 3657) has occurred while \output is active []
 
 
 
 [6
 
- <./graphs/attack/perplexity_main.pdf> <./graphs/attack/roc_vs_pos_by_k.pdf>] (./acl_latex.bbl
+ <./graphs/attack/perplexity_main.pdf> <./graphs/attack/roc_vs_pos_by_k.pdf>]
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 382.
+
+
+Package natbib Warning: There were undefined citations.
+
+
 
 [7
 pdfTeX warning (ext4): destination with the same identifier (name{ALG@line.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.51 
-     
+l.417 \end{document}
+                    
 pdfTeX warning (ext4): destination with the same identifier (name{ALG@line.2}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.51 
-     
+l.417 \end{document}
+                    
 pdfTeX warning (ext4): destination with the same identifier (name{ALG@line.3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.51 
-     
+l.417 \end{document}
+                    
 pdfTeX warning (ext4): destination with the same identifier (name{ALG@line.4}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.51 
-     
+l.417 \end{document}
+                    
 pdfTeX warning (ext4): destination with the same identifier (name{ALG@line.5}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.51 
-     
+l.417 \end{document}
+                    
 pdfTeX warning (ext4): destination with the same identifier (name{ALG@line.6}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.51 
-     
+l.417 \end{document}
+                    
 pdfTeX warning (ext4): destination with the same identifier (name{ALG@line.7}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.51 
-     ])
-
-[8] (./acl_latex.aux)
+l.417 \end{document}
+                    ] (./acl_latex.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
+
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
 
 Package rerunfilecheck Warning: File `acl_latex.out' has changed.
@@ -687,22 +723,25 @@ Package rerunfilecheck Warning: File `acl_latex.out' has changed.
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `acl_latex.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  77626A0E424A3871D26375CE4C732CE9;2415.
+(rerunfilecheck)             Before: F7F6FF19F5C3995F52F1DA5189ED9026;2402
+(rerunfilecheck)             After:  4CB8095B7B7336369B9C9596662DE5D4;2530.
  ) 
 Here is how much of TeX's memory you used:
- 17743 strings out of 473201
- 295434 string characters out of 5716121
- 743927 words of memory out of 5000000
- 40383 multiletter control sequences out of 15000+600000
- 623102 words of font info for 288 fonts, out of 8000000 for 9000
+ 17799 strings out of 473201
+ 296216 string characters out of 5716121
+ 738006 words of memory out of 5000000
+ 40417 multiletter control sequences out of 15000+600000
+ 625107 words of font info for 304 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 90i,14n,93p,1188b,608s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,14n,93p,1188b,584s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+pdfTeX warning (dest): name{figure.caption.4} has been referenced but does not exist, replaced by a fixed one
+
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on acl_latex.pdf (8 pages, 215882 bytes).
+Output written on acl_latex.pdf (7 pages, 218560 bytes).
 PDF statistics:
- 375 PDF objects out of 1000 (max. 8388607)
- 223 compressed objects within 3 object streams
- 68 named destinations out of 1000 (max. 500000)
- 65035 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 444 PDF objects out of 1000 (max. 8388607)
+ 293 compressed objects within 3 object streams
+ 67 named destinations out of 1000 (max. 500000)
+ 66731 words of extra memory for PDF output out of 74296 (max. 10000000)
 

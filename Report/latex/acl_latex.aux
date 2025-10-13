@@ -9,61 +9,48 @@
 \citation{Lee_2023}
 \citation{shahid2022areyouacyborg}
 \citation{mitrovic2023chatgpthumandetectexplain}
+\citation{bakhtin2019realfakelearningdiscriminate}
 \citation{su2023detectllm}
-\citation{XSum}
-\citation{HC3}
+\citation{detectgpt}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {2}Methodology}{1}{section.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Datasets}{1}{subsection.2.1}\protected@file@percent }
-\citation{detectgpt}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Methods}{2}{subsection.2.2}\protected@file@percent }
-\newlabel{eq:fastdetect}{{1}{2}{Methods}{equation.1}{}}
-\newlabel{eq:fastdetect@cref}{{[equation][1][]1}{[1][2][]2}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Models}{2}{subsection.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Mid-K Attack}{2}{subsection.2.4}\protected@file@percent }
+\newlabel{sec:methodology}{{2}{1}{Methodology}{section.2}{}}
+\newlabel{sec:methodology@cref}{{[section][2][]2}{[1][1][]1}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Methods}{1}{subsection.2.1}\protected@file@percent }
+\citation{XSum}
+\citation{HC3}
 \citation{deepseekai}
 \citation{phi2}
 \citation{mistral}
+\newlabel{eq:fastdetect}{{1}{2}{Methods}{equation.1}{}}
+\newlabel{eq:fastdetect@cref}{{[equation][1][]1}{[1][2][]2}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Models}{2}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Datasets}{2}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Mid-K Attack}{2}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Experiments}{2}{section.3}\protected@file@percent }
 \citation{xlsum}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Experiments}{3}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Implementation}{3}{subsection.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Reproducibility Study}{3}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Closed-Weight API Model}{3}{subsection.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Low-Resource Language}{3}{subsection.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Adversarial Attack}{3}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Reproducibility Study}{3}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Closed-Weight API Model}{3}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Low-Resource Language}{3}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Adversarial Attack}{3}{subsection.3.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces AUROC results on XSum and HC3 across three new models. Fast-DetectGPT consistently outperforms all other methods.}}{3}{table.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:main_results}{{1}{3}{AUROC results on XSum and HC3 across three new models. Fast-DetectGPT consistently outperforms all other methods}{table.caption.1}{}}
+\newlabel{tab:main_results@cref}{{[table][1][]1}{[1][3][]3}{}{}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Results}{3}{section.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Reproducibility}{3}{subsection.4.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Detection performance (AUROC) on XSum and HC3 datasets across three new source-models. Fast-DetectGPT is compared with three baselines, and only in 1 case with DetectGPT due to computational and time constraints. FastDetectGPT always achieves the best results.}}{4}{table.caption.1}\protected@file@percent }
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{tab:main_results}{{1}{4}{Detection performance (AUROC) on XSum and HC3 datasets across three new source-models. Fast-DetectGPT is compared with three baselines, and only in 1 case with DetectGPT due to computational and time constraints. FastDetectGPT always achieves the best results}{table.caption.1}{}}
-\newlabel{tab:main_results@cref}{{[table][1][]1}{[1][3][]4}{}{}{}}
+\bibdata{custom}
+\bibcite{adelani2019generatingsentimentpreservingfakeonline}{{1}{2019}{{Adelani et~al.}}{{Adelani, Mai, Fang, Nguyen, Yamagishi, and Echizen}}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}API Model}{4}{subsection.4.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces AUROC results for the API experiment with GPT 4o mini over the two datasets. This model shows strange behaviors, with the entropy baseline performing very well, while Fast-DetetGPT and the other baselines perform very poorly. }}{4}{table.caption.2}\protected@file@percent }
-\newlabel{tab:API_results}{{2}{4}{AUROC results for the API experiment with GPT 4o mini over the two datasets. This model shows strange behaviors, with the entropy baseline performing very well, while Fast-DetetGPT and the other baselines perform very poorly}{table.caption.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces AUROC results for the API experiment over the two datasets, only on Fast-DetectGPT. Performance is lower than with open-weight models.}}{4}{table.caption.2}\protected@file@percent }
+\newlabel{tab:API_results}{{2}{4}{AUROC results for the API experiment over the two datasets, only on Fast-DetectGPT. Performance is lower than with open-weight models}{table.caption.2}{}}
 \newlabel{tab:API_results@cref}{{[table][2][]2}{[1][4][]4}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Low-resource Language}{4}{subsection.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Mid-K Attack}{4}{subsection.4.4}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces AUROC results for the under-represented language experiment. Surprisingly, Fast-DetectGPT performs slightly worse than the LogRank baseline.}}{4}{table.caption.3}\protected@file@percent }
 \newlabel{tab:scotgal_results}{{3}{4}{AUROC results for the under-represented language experiment. Surprisingly, Fast-DetectGPT performs slightly worse than the LogRank baseline}{table.caption.3}{}}
 \newlabel{tab:scotgal_results@cref}{{[table][3][]3}{[1][4][]4}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{5}{section.5}\protected@file@percent }
-\citation{facebook125m}
-\citation{facebook125m}
-\citation{radford2019language}
-\citation{radford2019language}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Additional Results}{6}{appendix.A}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Mean sampled perplexity vs number of perturbations made. Presented per each cutoff tested. The trend follows inverse curve to the model performance. Measured on facebook/opt-125m~\citep  {facebook125m}.}}{6}{figure.caption.4}\protected@file@percent }
-\newlabel{fig:perplexity}{{1}{6}{Mean sampled perplexity vs number of perturbations made. Presented per each cutoff tested. The trend follows inverse curve to the model performance. Measured on facebook/opt-125m~\cite {facebook125m}}{figure.caption.4}{}}
-\newlabel{fig:perplexity@cref}{{[figure][1][]1}{[1][6][]6}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces ROC AUC vs number of perturbed positions, shown separately for different cutoff values. The dashed line indicates baseline performance without perturbation. ROC AUC decreases as the number of perturbations increases, with larger cutoffs accelerating the degradation. Results are reported for GPT-2 (124M)~\citep  {radford2019language}.}}{6}{figure.caption.5}\protected@file@percent }
-\newlabel{fig:ROC_attack}{{2}{6}{ROC AUC vs number of perturbed positions, shown separately for different cutoff values. The dashed line indicates baseline performance without perturbation. ROC AUC decreases as the number of perturbations increases, with larger cutoffs accelerating the degradation. Results are reported for GPT-2 (124M)~\cite {radford2019language}}{figure.caption.5}{}}
-\newlabel{fig:ROC_attack@cref}{{[figure][2][]2}{[1][6][]6}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Example texts under Mid-K attack with GPT-2 (124M) on XSum.}}{6}{table.caption.6}\protected@file@percent }
-\newlabel{tab:placeholder}{{4}{6}{Example texts under Mid-K attack with GPT-2 (124M) on XSum}{table.caption.6}{}}
-\newlabel{tab:placeholder@cref}{{[table][4][]4}{[1][6][]6}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B}Algorithms}{6}{appendix.B}\protected@file@percent }
-\bibdata{custom}
-\bibcite{adelani2019generatingsentimentpreservingfakeonline}{{1}{2019}{{Adelani et~al.}}{{Adelani, Mai, Fang, Nguyen, Yamagishi, and Echizen}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Low-resource Language}{4}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Mid-K Attack}{4}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{4}{section.5}\protected@file@percent }
 \bibcite{ahmed2021detectingfakenewsusing}{{2}{2021}{{Ahmed et~al.}}{{Ahmed, Aljabouh, Donepudi, and Choi}}}
 \bibcite{GPT3}{{3}{2020}{{Brown et~al.}}{{Brown, Mann, Ryder, Subbiah, Kaplan, Dhariwal, Neelakantan, Shyam, Sastry, Askell, Agarwal, Herbert-Voss, Krueger, Henighan, Child, Ramesh, Ziegler, Wu, Winter, Hesse, Chen, Sigler, Litwin, Gray, Chess, Clark, Berner, McCandlish, Radford, Sutskever, and Amodei}}}
 \bibcite{deepseekai}{{4}{2025}{{DeepSeek-AI}}{{}}}
@@ -73,16 +60,35 @@
 \bibcite{mistral}{{8}{2023}{{Jiang et~al.}}{{Jiang, Sablayrolles, Mensch, Bamford, Chaplot, de~las Casas, Bressand, Lengyel, Lample, Saulnier, Lavaud, Lachaux, Stock, Scao, Lavril, Wang, Lacroix, and Sayed}}}
 \bibcite{Lee_2023}{{9}{2023}{{Lee et~al.}}{{Lee, Le, Chen, and Lee}}}
 \bibcite{detectgpt}{{10}{2023}{{Mitchell et~al.}}{{Mitchell, Lee, Khazatsky, Manning, and Finn}}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Fast-DetectGPT machine-generated text detection.}}{7}{algorithm.1}\protected@file@percent }
-\newlabel{alg:fastdetectgpt}{{0}{7}{Fast-DetectGPT machine-generated text detection}{algorithm.1}{}}
-\newlabel{alg:fastdetectgpt@cref}{{[algorithm][1][]1}{[1][6][]7}{}{}{}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces DetectGPT machine-generated text detection}}{7}{algorithm.2}\protected@file@percent }
-\newlabel{alg:detectgpt}{{0}{7}{DetectGPT machine-generated text detection}{algorithm.2}{}}
-\newlabel{alg:detectgpt@cref}{{[algorithm][2][]2}{[1][6][]7}{}{}{}}
 \bibcite{mitrovic2023chatgpthumandetectexplain}{{11}{2023}{{Mitrović et~al.}}{{Mitrović, Andreoletti, and Ayoub}}}
 \bibcite{XSum}{{12}{2018}{{Narayan et~al.}}{{Narayan, Cohen, and Lapata}}}
 \bibcite{radford2019language}{{13}{2019}{{Radford et~al.}}{{Radford, Wu, Child, Luan, Amodei, and Sutskever}}}
 \bibcite{shahid2022areyouacyborg}{{14}{2022}{{Shahid et~al.}}{{Shahid, Li, Staples, Amin, Hakak, and Ghorbani}}}
 \bibcite{su2023detectllm}{{15}{2023}{{Su et~al.}}{{Su, Zhuo, Wang, and Nakov}}}
 \bibcite{facebook125m}{{16}{2022}{{Zhang et~al.}}{{Zhang, Roller, Goyal, Artetxe, Chen, Chen, Dewan, Diab, Li, Lin et~al.}}}
-\gdef \@abspage@last{8}
+\citation{facebook125m}
+\citation{facebook125m}
+\citation{radford2019language}
+\citation{radford2019language}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Implementation}{6}{appendix.A}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Speed Comparison}{6}{appendix.B}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {C}Additional Results}{6}{appendix.C}\protected@file@percent }
+\newlabel{appendix:perplexity}{{C}{6}{Additional Results}{appendix.C}{}}
+\newlabel{appendix:perplexity@cref}{{[section][3][]C}{[1][6][]6}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Mean sampled perplexity vs number of perturbations made. Presented per each cutoff tested. The trend follows inverse curve to the model performance. Measured on facebook/opt-125m~\citep  {facebook125m}.}}{6}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:perplexity}{{1}{6}{Mean sampled perplexity vs number of perturbations made. Presented per each cutoff tested. The trend follows inverse curve to the model performance. Measured on facebook/opt-125m~\cite {facebook125m}}{figure.caption.5}{}}
+\newlabel{fig:perplexity@cref}{{[figure][1][]1}{[1][6][]6}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces AUROC vs number of perturbed positions, shown separately for different cutoff values. The dashed line indicates baseline performance without perturbation. AUROC decreases as the number of perturbations increases, with larger cutoffs accelerating the degradation. Results are reported for GPT-2 (124M)~\citep  {radford2019language}.}}{6}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:ROC_attack}{{2}{6}{AUROC vs number of perturbed positions, shown separately for different cutoff values. The dashed line indicates baseline performance without perturbation. AUROC decreases as the number of perturbations increases, with larger cutoffs accelerating the degradation. Results are reported for GPT-2 (124M)~\cite {radford2019language}}{figure.caption.6}{}}
+\newlabel{fig:ROC_attack@cref}{{[figure][2][]2}{[1][6][]6}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Example texts under Mid-K attack with GPT-2 (124M) on XSum.}}{7}{table.caption.7}\protected@file@percent }
+\newlabel{tab:placeholder}{{4}{7}{Example texts under Mid-K attack with GPT-2 (124M) on XSum}{table.caption.7}{}}
+\newlabel{tab:placeholder@cref}{{[table][4][]4}{[1][6][]7}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Algorithms}{7}{appendix.D}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Fast-DetectGPT machine-generated text detection.}}{7}{algorithm.1}\protected@file@percent }
+\newlabel{alg:fastdetectgpt}{{0}{7}{Fast-DetectGPT machine-generated text detection}{algorithm.1}{}}
+\newlabel{alg:fastdetectgpt@cref}{{[algorithm][1][]1}{[1][7][]7}{}{}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces DetectGPT machine-generated text detection}}{7}{algorithm.2}\protected@file@percent }
+\newlabel{alg:detectgpt}{{0}{7}{DetectGPT machine-generated text detection}{algorithm.2}{}}
+\newlabel{alg:detectgpt@cref}{{[algorithm][2][]2}{[1][7][]7}{}{}{}}
+\gdef \@abspage@last{7}
