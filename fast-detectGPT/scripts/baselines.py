@@ -12,6 +12,7 @@ import json
 from data_builder import load_data
 from model import load_tokenizer, load_model, openai_models
 from metrics import get_roc_metrics, get_precision_recall_metrics
+from itertools import zip_longest
 
 def get_likelihood(logits, labels):
     assert logits.shape[0] == 1
@@ -68,21 +69,33 @@ def _mean_ignore_nones(xs):
     xs = [x for x in xs if x is not None]
     return float(np.mean(xs)) if xs else float("nan")
 
+def _align_api_logs(logs, top_k):
+    tokens = logs.get("tokens") or []
+    tops = logs.get("top_logprobs_per_token") or []
+    token_ll = logs.get("token_logprobs") or []
+    n = min(len(tokens), len(tops), len(token_ll))
+    tokens = tokens[:n]
+    tops = [([] if t is None else t[:top_k]) for t in tops[:n]]
+    token_ll = [float(x) if x is not None else np.nan for x in token_ll[:n]]
+    return tokens, tops, token_ll
+
 def _approx_rank_from_tops(tokens, tops, use_log=False, default_top_k=20):
     ranks = []
-    for tok, top in zip(tokens, tops):
-        if not top:
+    for tok, top in zip_longest(tokens, tops, fillvalue=[]):
+        if tok is None:
             continue
-        # top: [{'token', 'logprob', 'rank'}] — rank is 0-indexed in most wrappers
-        found_rank = next((t["rank"] for t in top if t["token"] == tok), None)
-        k = len(top) if len(top) > 0 else default_top_k
-        r = (found_rank + 1) if found_rank is not None else (k + 1)  # not found -> k+1
+        found_rank = None
+        for t in (top or []):
+            if t.get("token") == tok:
+                found_rank = t.get("rank", None)
+                break
+        k = len(top) if top else default_top_k
+        r = (found_rank + 1) if (found_rank is not None) else (k + 1)
         ranks.append(float(r))
     if not ranks:
         return float("nan")
-    if use_log:
-        return -float(np.mean(np.log(np.array(ranks, dtype=np.float64))))
-    return -float(np.mean(ranks))
+    arr = np.array(ranks, dtype=np.float64)
+    return -float(np.mean(np.log(arr))) if use_log else -float(np.mean(arr))
 
 def _approx_entropy_from_tops(tops):
     ents = []
@@ -99,6 +112,8 @@ def _approx_entropy_from_tops(tops):
         ents.append(ent)
     return float(np.mean(ents)) if ents else float("nan")
 
+def _filter_finite(xs):
+    return [x for x in xs if x is not None and np.isfinite(x)]
 
 def experiment(args):
     
@@ -132,42 +147,24 @@ def experiment(args):
             sampled_text = data["sampled"][idx]
 
             if is_openai_model:
-                original_logs = scoring_model.score_text_with_logprobs(
-                    text=original_text, top_k=top_k, max_length=max_length
-                )
-                sampled_logs = scoring_model.score_text_with_logprobs(
-                    text=sampled_text, top_k=top_k, max_length=max_length
-                )
+                o_logs = scoring_model.score_text_with_logprobs(text=original_text, top_k=top_k, max_length=max_length)
+                s_logs = scoring_model.score_text_with_logprobs(text=sampled_text,  top_k=top_k, max_length=max_length)
+
+                o_tokens, o_tops, o_ll = _align_api_logs(o_logs, top_k)
+                s_tokens, s_tops, s_ll = _align_api_logs(s_logs, top_k)
 
                 if name == 'likelihood':
-                    # mean token logprob (matches open path's mean across positions)
-                    o_ll = original_logs.get("token_logprobs", []) or []
-                    s_ll = sampled_logs.get("token_logprobs", []) or []
                     original_crit = _mean_ignore_nones(o_ll)
                     sampled_crit = _mean_ignore_nones(s_ll)
 
                 elif name in ('rank', 'logrank'):
                     use_log = (name == 'logrank')
-                    original_crit = _approx_rank_from_tops(
-                        original_logs.get("tokens", []) or [],
-                        original_logs.get("top_logprobs_per_token", []) or [],
-                        use_log=use_log,
-                        default_top_k=top_k
-                    )
-                    sampled_crit = _approx_rank_from_tops(
-                        sampled_logs.get("tokens", []) or [],
-                        sampled_logs.get("top_logprobs_per_token", []) or [],
-                        use_log=use_log,
-                        default_top_k=top_k
-                    )
+                    original_crit = _approx_rank_from_tops(o_tokens, o_tops, use_log=use_log, default_top_k=top_k)
+                    sampled_crit = _approx_rank_from_tops(s_tokens, s_tops, use_log=use_log, default_top_k=top_k)
 
                 elif name == 'entropy':
-                    original_crit = _approx_entropy_from_tops(
-                        original_logs.get("top_logprobs_per_token", []) or []
-                    )
-                    sampled_crit = _approx_entropy_from_tops(
-                        sampled_logs.get("top_logprobs_per_token", []) or []
-                    )
+                    original_crit = _approx_entropy_from_tops(o_tops)
+                    sampled_crit = _approx_entropy_from_tops(s_tops)
 
             else:
                 # original text
@@ -200,8 +197,8 @@ def experiment(args):
             })
 
         predictions = {
-            'real': [x["original_crit"] for x in eval_results],
-            'samples': [x["sampled_crit"] for x in eval_results]
+            'real': _filter_finite([x["original_crit"] for x in eval_results]),
+            'samples': _filter_finite([x["sampled_crit"]  for x in eval_results])
         }
 
         fpr, tpr, roc_auc = get_roc_metrics(predictions['real'], predictions['samples'])
