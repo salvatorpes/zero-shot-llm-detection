@@ -1,7 +1,7 @@
 # clean cache
 conda clean --all -y
 conda remove -n fastdetectGPT --all -y
-conda create -n fastdetectGPT python=3.10 -y
+conda create -n fastdetectGPT python=3.11 -y
 source activate fastdetectGPT
 conda clean --all -y
 pip install --upgrade pip

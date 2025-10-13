@@ -32,9 +32,9 @@ echo `date`, Evaluate models in the white-box setting:
 # Evaluate Fast-DetectGPT, fast baselines and DetectGPT (but doesn't work)
 for D in $datasets; do
   for M in $source_models; do
-    echo `date`, Evaluating Fast-DetectGPT on ${D}_${M} ...
-    python scripts/fast_detect_gpt.py --sampling_model_name $M --scoring_model_name $M --dataset $D \
-                          --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}_FD
+    # echo `date`, Evaluating Fast-DetectGPT on ${D}_${M} ...
+    # python scripts/fast_detect_gpt.py --sampling_model_name $M --scoring_model_name $M --dataset $D \
+    #                       --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}_FD
 
     echo `date`, Evaluating baseline methods on ${D}_${M} ...
     python scripts/baselines.py --scoring_model_name $M --dataset $D \
